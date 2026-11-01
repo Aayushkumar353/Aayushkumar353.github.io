@@ -29,6 +29,7 @@
 <style>
 /* ---------- Colour themes. Each one is a full set of colours; the SITE block picks one. ---------- */
 :root{
+  --bar-h:68px;   /* height of the top bar */
   --display:"Barlow Condensed",Impact,"Arial Narrow",sans-serif;
   --body:Barlow,"Helvetica Neue",Arial,system-ui,sans-serif;
   /* crimson (default): red on black */
@@ -45,7 +46,7 @@
 
 /* ---------- Base ---------- */
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;scroll-padding-top:104px;background:var(--bg);color-scheme:dark;-webkit-text-size-adjust:100%}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--bar-h) + 16px);background:var(--bg);color-scheme:dark;-webkit-text-size-adjust:100%}
 body{font:400 .9375rem/1.65 var(--body);color:var(--text);background:var(--bg);overflow-x:clip;-webkit-font-smoothing:antialiased}
 a{color:inherit}
 ul{list-style:none}
@@ -82,16 +83,16 @@ footer.site a:hover::after,footer.site a:focus-visible::after{
   background:linear-gradient(90deg,transparent 56%,color-mix(in srgb,var(--accent) 22%,transparent) 94%),color-mix(in srgb,var(--bg) 88%,transparent);
   -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
   border-bottom:1px solid var(--line);border-bottom-color:color-mix(in srgb,var(--accent) 24%,var(--bg))}
-.bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1.5rem;height:88px;padding-inline:clamp(1rem,3.4vw,4.25rem)}
-.brand{display:flex;align-items:stretch;gap:.9rem;min-width:0;justify-self:start;padding:.4rem 0;color:var(--text);text-decoration:none;transform:skewX(-10deg)}
+.bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1.5rem;height:var(--bar-h);padding-inline:clamp(1rem,3.4vw,4.25rem)}
+.brand{display:flex;align-items:stretch;gap:.9rem;min-width:0;justify-self:start;padding:.2rem 0;color:var(--text);text-decoration:none;transform:skewX(-10deg)}
 .bars{display:flex;gap:5px;flex:none;transition:gap .25s}
 .bars i{width:7px;background:var(--accent)}
 .bars i+i{width:3px;background:var(--text)}
 .brand:hover .bars,.brand:focus-visible .bars{gap:9px}
 .who{display:flex;flex-direction:column;justify-content:center;min-width:0}
 .who b,.who small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.who b{padding:.04em 0;font:900 clamp(1.5rem,1.25rem + .7vw,1.85rem)/.9 var(--display);letter-spacing:.02em;text-transform:uppercase}
-.who small{margin-top:.35rem;color:var(--mute);font:600 .8rem/1.1 var(--body)}
+.who b{padding:.04em 0;font:900 clamp(1.4rem,1.2rem + .6vw,1.7rem)/.9 var(--display);letter-spacing:.02em;text-transform:uppercase}
+.who small{margin-top:.3rem;color:var(--mute);font:600 .8rem/1.1 var(--body)}
 .nav{display:flex;justify-self:center;gap:clamp(1.4rem,2.4vw,2.1rem)}
 .nav a{padding:.55rem 0;text-decoration:none;font:500 .875rem/1 var(--body);letter-spacing:.08em;text-transform:uppercase}
 .topcta{display:flex;align-items:center;align-self:stretch;justify-self:end;gap:1.5rem;padding-left:1.4rem;text-decoration:none;font:500 .875rem/1 var(--body);letter-spacing:.08em;text-transform:uppercase;
@@ -127,14 +128,23 @@ footer.site a:hover::after,footer.site a:focus-visible::after{
 .tlink{display:inline-flex;align-items:center;gap:.55rem;padding:.55rem 0;font:700 .78rem/1.2 var(--body);letter-spacing:.14em;text-transform:uppercase;text-decoration:none}
 .tlink svg{width:11px;height:11px;color:var(--hi)}
 
-/* ---------- Skills bar (under the hero) ---------- */
-.skillbar{border-block:1px solid var(--line)}
-.skillbar ul{display:grid;grid-template-columns:repeat(6,minmax(0,1fr))}
-.skillbar li{padding:1.3rem clamp(.8rem,1.6vw,1.5rem);border-left:1px solid var(--line)}
-.skillbar li:first-child{padding-left:0;border-left:0}
-.skillbar b{display:flex;align-items:center;gap:.5rem;font:900 clamp(1.3rem,1.8vw,1.8rem)/1 var(--display);text-transform:uppercase}
-.skillbar b::before{content:"";flex:none;width:4px;height:.85em;background:var(--accent);transform:skewX(-10deg)}
-.skillbar span{display:block;margin-top:.45rem;color:var(--mute);font-size:.85rem;line-height:1.35}
+/* ---------- Skills (under the hero): names only, as small boxes styled like the contact card.
+   Two rows drift in opposite directions and fade out at both ends. With reduced motion they sit still and wrap. ---------- */
+.skillbar{padding:clamp(1.3rem,3vw,2rem) 0;border-top:2px solid var(--accent)}
+.mq{max-width:1320px;margin-inline:auto;padding-inline:clamp(1rem,4vw,2.5rem)}
+.mq+.mq{margin-top:.75rem}
+.track{display:flex;flex-wrap:wrap;gap:.75rem}
+.track li{flex:none;display:flex;align-items:center;min-width:clamp(9.5rem,13vw,12.5rem);min-height:4.2rem;padding:.9rem 1.2rem;background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 7%,var(--surface)),var(--surface));border:1px solid var(--line);border-top:2px solid var(--accent);font:900 clamp(1.05rem,1.35vw,1.3rem)/1.05 var(--display);text-transform:uppercase;white-space:nowrap}
+.track li[aria-hidden]{display:none}
+@media(prefers-reduced-motion:no-preference){
+  /* Each track holds two identical groups, so sliding it by half its width loops with no jump. */
+  .mq{max-width:none;padding-inline:0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+  .track{flex-wrap:nowrap;gap:0;width:max-content;animation:drift var(--dur,80s) linear infinite;will-change:transform}
+  .track li{margin-right:.75rem}
+  .track li[aria-hidden]{display:flex}
+  .mq.rev .track{animation-direction:reverse}
+  @keyframes drift{to{transform:translateX(-50%)}}
+}
 
 /* ---------- Sections ---------- */
 .sec{padding:clamp(2.6rem,6vw,4.5rem) 0}
@@ -176,7 +186,9 @@ button.media:hover .pill{filter:brightness(1.12)}
 .pillar{padding-top:1rem;border-top:2px solid var(--accent)}
 .pillar .n{display:block;color:var(--hi);font:600 .75rem/1 var(--body);letter-spacing:.14em}
 .pillar h3{margin:1.2rem 0 .6rem;font-size:clamp(1.3rem,1.5vw,1.55rem);line-height:.98}
-.pillar p{color:var(--mute);font-size:.9rem}
+.pts{display:grid;gap:.45rem}
+.pts li{position:relative;padding-left:1.05rem;color:var(--mute);font-size:.9rem;line-height:1.45}
+.pts li::before{content:"";position:absolute;left:0;top:.55em;width:5px;height:5px;background:var(--accent);transform:skewX(-10deg)}
 
 /* ---------- Rates (hidden unless showRates is true in the SITE block) ---------- */
 .tw{overflow-x:auto;border:1px solid var(--line);background:var(--surface)}
@@ -226,9 +238,6 @@ footer.site a:hover{color:var(--text)}
 /* ---------- Smaller screens ---------- */
 @media(max-width:1100px){
   .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .skillbar ul{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .skillbar li:nth-child(3n+1){padding-left:0;border-left:0}
-  .skillbar li:nth-child(n+4){border-top:1px solid var(--line)}
 }
 @media(max-width:860px){
   .bar{grid-template-columns:1fr auto}
@@ -237,11 +246,6 @@ footer.site a:hover{color:var(--text)}
 }
 @media(max-width:700px){
   .grid{grid-template-columns:1fr}
-  .skillbar ul{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .skillbar li{padding:1.1rem .9rem}
-  .skillbar li:nth-child(odd){padding-left:0;border-left:0}
-  .skillbar li:nth-child(even){border-left:1px solid var(--line)}
-  .skillbar li:nth-child(n+3){border-top:1px solid var(--line)}
   .rows{grid-template-columns:1fr}
   thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
   tr{display:block;padding:1rem 1.2rem;border-top:1px solid var(--line)}
@@ -251,7 +255,7 @@ footer.site a:hover{color:var(--text)}
   td.price{font-size:1.4rem}
 }
 @media(max-width:520px){
-  .bar{height:64px}
+  :root{--bar-h:60px}
   .topcta{padding-left:0;border-left:0}
   .lbl{display:none}
 }
@@ -263,7 +267,7 @@ footer.site a:hover{color:var(--text)}
 @keyframes crew-spin{to{transform:rotate(-360deg)}}
 @media(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce),print{.crew{display:none}}
 
-/* ---------- One entrance on load; nothing else moves on its own ---------- */
+/* ---------- One entrance on load. The only other thing that moves on its own is the skills rows. ---------- */
 @media(prefers-reduced-motion:no-preference){
   .intro::before{animation:draw 1s cubic-bezier(.2,.7,.2,1) both}
   .intro>*{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
@@ -299,25 +303,29 @@ footer.site a:hover{color:var(--text)}
 </svg></div>
 <noscript><p class="wrap" style="padding-top:2rem">This portfolio needs JavaScript. Email me instead.</p></noscript>
 <script>
-/* ===== EDIT THIS BLOCK. Everything on the page comes from here. Use real numbers only. ===== */
+/* ===== Everything on the page comes from here. ===== */
 const SITE = {
   theme: "crimson",   // crimson (red and black), cobalt, amber, violet, mint or rose. Preview one by adding ?theme=amber to the page address.
-  name: "Your Name",
+  name: "Aayush",
   role: "Roblox Scripter",
   intro: "I am a Roblox Scripter building complete features, from server logic and saving to the UI players touch.",   // the lines under "Hi, I’m ..."
   tagline: "Game systems, data saving and server-side checks. Send me the scope and I’ll reply with a price and timeline.",   // optional smaller line under the intro
-  years: "Luau scripting on Roblox",
+  years: "1 Year",
   available: true,
-  hours: "20 hours a week, UTC+0",
+  hours: "16 hours a Day, UTC+5:30",
   reply: "Within 24 hours",
   payment: "PayPal or Robux through a group payout",
-  pillars: [
-    ["Whole-feature scripting","Server logic, saving, UI and player feedback for one feature, written together so nothing is lost between hand-offs."],
-    ["Hours you can plan around","Short fixes and long contracts, with weekly hours and a reply time agreed before work starts."],
-    ["Built to resist exploits","Every remote is checked on the server, and saved data is versioned so an update never wipes player progress."],
-    ["Works inside your codebase","I read your existing scripts, follow your structure and leave clear modules your team can build on."]
+  pillars: [   // a title and its points; each point becomes a bullet. A comma-separated string also works.
+    ["Gameplay",["Combat Systems","Movement Systems","Weapons","Abilities","Bosses & AI","NPCs"]],
+    ["Backend",["State Machines","Networking Modules","Leaderboard System","Cross-server Systems","Server Validations"]],
+    ["User Interface",["UI Design","UI Programming","Dialogue Systems","Viewports","Animations","Advanced Tweening","Menus","HUDs"]],
+    ["Anti-Cheat",["Server-side security","Remote Event/Function validation","Exploit Prevention"]],
+    ["Economy",["Currency Systems","Shop Systems","Inventory Systems","Loot & RNG"]],
+    ["OOPs Luau",["Classes","Modules","Inheritance","Composition","Clean Code"]],
+    ["DataStore",["DataStore2","ProfileService","DataStore saving","DataStore security","DataStore optimization"]],
+    ["Debugging",["Debugging","Testing","Optimizing","Performance Tuning"]]
   ],
-  skills: [["Luau","clean, modular scripts"],["DataStore","saving player data safely"],["Remotes","checked on the server"],["UI/UX","menus, tweens and feedback"],["Game systems","shops, quests and combat"],["Git and Rojo","team workflows"]],   // the bar under the hero: a name and one short line each. Six fits best.
+  skills: ["Modular Luau","DataStore","Core Systems","Progression Systems","Gameplay Systems","User Interface","Debugging","Anti-Cheat","Frameworks","OOPs Luau"],   // the grid under the hero: names only. Ten fits best (two even rows of five).
   projects: [
     // label: short line above the title. yt: paste the YouTube link or the 11-character video ID. link: your Roblox game page (optional).
     { label:"Commissioned solo build", title:"Pet hatching and collection", blurb:"Weighted egg odds, saved collections and a hatch animation that stays smooth with many pets.", tags:["Luau","DataStore","RNG"], yt:"", link:"" },
@@ -335,8 +343,9 @@ const SITE = {
     ["Ongoing work","$15 per hour","Invoiced weekly"]
   ],
   terms: "Half upfront, half on delivery. Larger projects are paid by milestone. Scope and price are agreed in writing before I start.",
+  showReviews: false,   // Client reviews are hidden for now. Set to true once you have real quotes in the list below.
   reviews: [ { quote:"Paste a real quote from a client here.", who:"Client name, game name", link:"" } ],
-  contact: { discord:"yourdiscord", discordId:"", email:"you@example.com", devforum:"", roblox:"" },   // discordId is optional: your numeric Discord user ID adds an "Open Discord" link
+  contact: { discord:"urekmazino1827", discordId:"", email:"kmaraayush7876@gmail.com", devforum:"", roblox:"" },   // discordId is optional: your numeric Discord user ID adds an "Open Discord" link
   updated: "Nov 2026"
 };
 /* ===== END OF EDIT BLOCK ===== */
@@ -391,8 +400,20 @@ const waves=()=>{
   }
   return out;
 };
+const skillRows=names=>{
+  /* First half of the skills on the top row (drifts left), the rest on the bottom row (drifts right). */
+  const half=Math.ceil(names.length/2),rows=[names.slice(0,half),names.slice(half)].filter(r=>r.length);
+  return rows.map((r,i)=>{
+    const reps=Math.max(3,Math.ceil(15/r.length));   /* enough copies that one group is wider than a big screen */
+    let li="";
+    for(let g=0;g<2;g++)for(let k=0;k<reps;k++)r.forEach(n=>{li+=`<li${g||k?' aria-hidden="true"':""}>${n}</li>`;});
+    return `<div class="mq${i%2?" rev":""}" style="--dur:${80+i*15}s"><ul class="track">${li}</ul></div>`;
+  }).join("");
+};
 const row=(label,html)=>`<div><dt class="caps">${label}</dt><dd>${html}</dd></div>`;
 const ext=(u,t)=>`<a class="tlink" href="${e(url(u))}" target="_blank" rel="noopener">${t} ${I.up}</a>`;
+
+const points=v=>Array.isArray(v)?v:String(v||"").split(",").map(x=>x.trim()).filter(Boolean);
 
 document.title=`${S.name} - ${S.role}`;
 document.getElementById("app").innerHTML=`
@@ -413,21 +434,21 @@ ${placeholder?`<div class="notice">Placeholder content. Edit the SITE block in i
     <p class="status caps"><i class="dot"></i>${e(status)}</p>
   </div></div>
 </section>
-${S.skills&&S.skills.length?`<section class="skillbar" aria-label="Skills"><div class="wrap"><ul>${S.skills.map(k=>`<li><b>${e(k[0])}</b><span>${e(k[1])}</span></li>`).join("")}</ul></div></section>`:""}
+${S.skills&&S.skills.length?`<section class="skillbar" aria-label="Skills">${skillRows(S.skills.map(k=>e(Array.isArray(k)?k[0]:k)))}</section>`:""}
 <section class="sec" id="work"><div class="wrap">
   <div class="head"><h2>Selected work</h2><p class="lede">Systems I built, each with a demo you can watch with sound.</p></div>
   <div class="grid">${(S.projects||[]).map(project).join("")}</div>
 </div></section>
 <section class="sec tight" id="skills"><div class="wrap">
   <div class="head"><h2>Capabilities</h2><p class="lede">How I work on a project.</p></div>
-  <ul class="pillars">${(S.pillars||[]).map((p,i)=>`<li class="pillar"><span class="n">${String(i+1).padStart(2,"0")}</span><h3>${e(p[0])}</h3><p>${e(p[1])}</p></li>`).join("")}</ul>
+  <ul class="pillars">${(S.pillars||[]).map((p,i)=>`<li class="pillar"><span class="n">${String(i+1).padStart(2,"0")}</span><h3>${e(p[0])}</h3><ul class="pts">${points(p[1]).map(t=>`<li>${e(t)}</li>`).join("")}</ul></li>`).join("")}</ul>
 </div></section>
 ${S.showRates?`<section class="sec tight" id="rates"><div class="wrap">
   <div class="head"><h2>Rates and terms</h2><p class="lede">Prices up front so you can check the budget before messaging me.</p></div>
   <div class="tw"><table><thead><tr><th class="caps" scope="col">Job</th><th class="caps" scope="col">Price</th><th class="caps" scope="col">Turnaround</th></tr></thead><tbody>${(S.rates||[]).map(r=>`<tr><td data-label="Job">${e(r[0])}</td><td class="price" data-label="Price">${e(r[1])}</td><td data-label="Turnaround">${e(r[2])}</td></tr>`).join("")}</tbody></table></div>
   <p class="terms">${e(S.terms)}</p>
 </div></section>`:""}
-${S.reviews&&S.reviews.length?`<section class="sec tight"><div class="wrap"><div class="head"><h2>Client reviews</h2></div><div class="quotes">${S.reviews.map(r=>`<blockquote><p>${e(r.quote)}</p><footer>${r.link?`<a href="${e(url(r.link))}" target="_blank" rel="noopener">${e(r.who)}</a>`:e(r.who)}</footer></blockquote>`).join("")}</div></div></section>`:""}
+${S.showReviews&&S.reviews&&S.reviews.length?`<section class="sec tight"><div class="wrap"><div class="head"><h2>Client reviews</h2></div><div class="quotes">${S.reviews.map(r=>`<blockquote><p>${e(r.quote)}</p><footer>${r.link?`<a href="${e(url(r.link))}" target="_blank" rel="noopener">${e(r.who)}</a>`:e(r.who)}</footer></blockquote>`).join("")}</div></div></section>`:""}
 <section class="cta${S.available?"":" off"}" id="contact"><div class="wrap">
   <div class="cgrid">
     <div class="cleft">
