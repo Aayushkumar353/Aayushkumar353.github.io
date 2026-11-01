@@ -161,7 +161,7 @@ h2{font-size:clamp(1.8rem,2.4vw + .7rem,2.5rem);line-height:.92}
 .media{position:relative;display:block;width:100%;aspect-ratio:16/9;overflow:hidden;background:#000 center/cover no-repeat;border-bottom:1px solid var(--line);text-align:left}
 .media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.7));pointer-events:none}
 .media:focus-visible{outline-offset:-4px}
-.num{position:absolute;z-index:1;top:.6rem;right:.9rem;color:#fff;font:900 clamp(1.4rem,1.8vw,1.8rem)/1 var(--display);text-shadow:0 2px 14px rgba(0,0,0,.65)}
+.num{position:absolute;z-index:1;pointer-events:none;top:.6rem;right:.9rem;color:#fff;font:900 clamp(1.4rem,1.8vw,1.8rem)/1 var(--display);text-shadow:0 2px 14px rgba(0,0,0,.65)}
 .pill{position:absolute;z-index:1;left:.9rem;bottom:.9rem;display:inline-flex;align-items:center;gap:.7rem;padding:.65rem .9rem;background:var(--accent);color:var(--on);font:700 .72rem/1 var(--body);letter-spacing:.14em;text-transform:uppercase;transition:filter .15s}
 .snd:hover{filter:brightness(1.12)}
 .snd[aria-pressed=true]{background:rgba(10,7,8,.74);color:var(--text);box-shadow:inset 0 0 0 1px var(--accent)}
@@ -170,7 +170,12 @@ h2{font-size:clamp(1.8rem,2.4vw + .7rem,2.5rem);line-height:.92}
 .vid [hidden]{display:none}
 .vp{position:absolute;inset:0;opacity:.01;transition:opacity .5s}   /* not 0: some browsers refuse to autoplay a fully transparent video */
 .vp.on{opacity:1}
-.open{position:absolute;inset:0;z-index:1;display:block}   /* only shown if YouTube refuses the embed */
+.zoom{position:absolute;inset:0;z-index:1;display:grid;place-items:center;cursor:pointer;transition:background .2s}   /* click anywhere on the video to open the watch view; the Sound button sits above it */
+.zoom:focus-visible{outline-offset:-4px}
+.badge{display:grid;place-items:center;width:3.7rem;height:3.7rem;border-radius:50%;background:var(--accent);color:var(--on);box-shadow:0 10px 30px -8px var(--glow);opacity:0;transform:scale(.82);transition:opacity .2s,transform .25s cubic-bezier(.22,1,.36,1)}
+.badge svg{width:17px;height:19px;margin-left:3px}
+.zoom:hover,.zoom:focus-visible{background:rgba(10,7,8,.3)}
+.zoom:hover .badge,.zoom:focus-visible .badge,.media.failed .badge{opacity:1;transform:none}   /* failed = YouTube refused the embed: thumbnail only, so the badge stays visible */
 .media.empty::after{display:none}
 .media iframe{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none}
 .media.empty{display:grid;place-items:center;cursor:default;background:repeating-linear-gradient(135deg,var(--surface) 0 18px,color-mix(in srgb,var(--accent) 8%,var(--surface)) 18px 36px)}
@@ -186,6 +191,36 @@ h2{font-size:clamp(1.8rem,2.4vw + .7rem,2.5rem);line-height:.92}
 .demo svg{color:var(--accent)}
 .demo.off{color:var(--mute)}
 .demo.off svg{color:var(--line2)}
+
+/* ---------- Watch view (opens when a project video or its Watch link is clicked) ----------
+   A native <dialog>: Esc closes it, focus stays inside it, and focus returns to the card when it closes.
+   Video on the left, the project's details on the right (stacked on small screens). The close button is a tab on the top edge. */
+html.lb-open{overflow:hidden;scrollbar-gutter:stable}
+.lb{--side:clamp(17rem,27vw,21rem);--pad:clamp(.75rem,3vw,2.5rem);position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:calc(var(--pad) + 44px) var(--pad) var(--pad);border:0;background:transparent;color:var(--text);overflow:auto}
+.lb[open]{display:flex}   /* not on .lb alone: that would override the closed state */
+.lb::backdrop{background:rgba(5,4,5,.88);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}   /* fixed colour: ::backdrop can't always read the theme variables */
+.lb-box{position:relative;width:min(100%,1240px);margin:auto;background:var(--surface);border:1px solid var(--line2);border-top:2px solid var(--accent);box-shadow:0 40px 120px -36px var(--glow)}
+.lb-x{position:absolute;right:-1px;bottom:100%;display:grid;place-items:center;width:44px;height:44px;background:var(--accent);color:var(--on);transition:filter .15s}
+.lb-x:hover{filter:brightness(1.12)}
+.lb-x:focus-visible{outline-offset:2px}
+.lb-x svg{width:14px;height:14px}
+.lb-stage{position:relative;aspect-ratio:16/9;background:#000 center/cover no-repeat}
+.lb-stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.lb-msg{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:1.1rem;padding:1.5rem;text-align:center;background:rgba(10,7,8,.8)}
+.lb-msg p{max-width:30ch;font:600 1rem/1.4 var(--body)}
+.lb-info{display:flex;flex-direction:column;align-items:flex-start;gap:1rem;padding:clamp(1.2rem,2.4vw,1.8rem);border-top:1px solid var(--line)}
+.lb-info h3{font-size:clamp(1.9rem,2.7vw,2.5rem);line-height:.94;overflow-wrap:anywhere}
+.lb-info .blurb{font-size:.95rem}
+@media(min-width:861px){
+  .lb-box{display:grid;grid-template-columns:minmax(0,1fr) var(--side);width:min(100%,1240px,calc((100dvh - 9rem)*16/9 + var(--side)))}   /* keeps the video fully on screen on short windows */
+  .lb-info{border-top:0;border-left:1px solid var(--line)}
+}
+@media(prefers-reduced-motion:no-preference){
+  .lb[open]::backdrop{animation:lb-fade .22s ease-out}
+  .lb[open] .lb-box{animation:lb-in .32s cubic-bezier(.2,.7,.2,1)}
+  @keyframes lb-fade{from{opacity:0}}
+  @keyframes lb-in{from{opacity:0;transform:translateY(16px) scale(.985)}}
+}
 
 /* ---------- Capabilities ---------- */
 .pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:clamp(1.3rem,2.6vw,2.2rem)}
@@ -333,7 +368,7 @@ const SITE = {
   ],
   skills: ["Modular Luau","DataStore","Movement Systems","Progression Systems","Combat Systems","User Interface","Debugging","Anti-Cheat Systems","Frameworks","OOPs Luau"],   // the grid under the hero: names only. Ten fits best (two even rows of five).
   projects: [
-    // label: short line above the title. yt: paste the YouTube link (or the 11-character video ID). The video plays on its own with no sound and visitors can turn sound on; the button under it says Play on YouTube. link: your Roblox game page (optional, adds a Play on Roblox button). A YouTube link pasted into link: also works as the video.
+    // label: short line above the title. yt: paste the YouTube link (or the 11-character video ID). The video plays on its own with no sound and visitors can turn sound on; clicking the video, or the Watch button under it, opens it in a larger watch view. link: your Roblox game page (optional, adds a Play on Roblox button). A YouTube link pasted into link: also works as the video.
     { label:"Commissioned solo build", title:"Pet hatching and collection", blurb:"Weighted egg odds, saved collections and a hatch animation that stays smooth with many pets.", tags:["Luau","DataStore","RNG"], yt:"https://youtu.be/iELzjT-pCWo?si=o-oqGe1KVwwcoJM0", link:"" },
     { label:"Commissioned feature", title:"Parry and combat framework", blurb:"Timing windows checked on the server, with hit feedback on the client.", tags:["Combat","Server validation"], yt:"", link:"" },
     { label:"Team project", title:"Quest and dialogue system", blurb:"Quest states that save between sessions, plus dialogue that triggers objectives.", tags:["Quests","UI","DataStore"], yt:"", link:"" },
@@ -365,6 +400,7 @@ const I={
   up:svg(14,14,'<path d="M3 11 11 3M4.5 3H11v6.5"/>'),
   down:svg(14,14,'<path d="M7 2v10M2.5 7.5 7 12l4.5-4.5"/>'),
   top:svg(14,14,'<path d="M7 12V2M2.5 6.5 7 2l4.5 4.5"/>'),
+  close:svg(14,14,'<path d="M2 2l10 10M12 2 2 12" stroke-linecap="round"/>'),
   play:svg(12,14,'<path d="M0 0l12 7-12 7z"/>','fill="currentColor"'),
   mute:svg(16,14,'<path d="M1 5h3l4-3.5v11L4 9H1z" fill="currentColor" stroke="none"/><path d="m11 5 4 4m0-4-4 4" stroke-width="1.6" stroke-linecap="round"/>').replace("<svg ",'<svg class="ic-off" '),
   vol:svg(16,14,'<path d="M1 5h3l4-3.5v11L4 9H1z" fill="currentColor" stroke="none"/><path d="M10.5 4.8a3.2 3.2 0 0 1 0 4.4M12.6 3a5.6 5.6 0 0 1 0 8" stroke-width="1.5" stroke-linecap="round"/>').replace("<svg ",'<svg class="ic-on" ')
@@ -383,13 +419,12 @@ const project=(p,i)=>{
   /* the video can be pasted into yt: or into link: (a YouTube address there is treated as the video) */
   const id=vid(p.yt)||vid(p.link),n=`<span class="num" aria-hidden="true">${String(i+1).padStart(2,"0")}</span>`;
   if(!id&&p.yt)console.warn(`Project ${i+1} (${p.title}): couldn't read this YouTube link:`,p.yt);
-  const watch=`https://www.youtube.com/watch?v=${id}`;
   const media=id
-    ?`<div class="media vid" data-yt="${id}" data-title="${e(p.title)}" style="background-image:url(https://i.ytimg.com/vi/${id}/maxresdefault.jpg),url(https://i.ytimg.com/vi/${id}/hqdefault.jpg)">${n}<div class="vp"><div></div></div><button class="pill snd" type="button" aria-pressed="false" aria-label="Sound for ${e(p.title)}" hidden>${I.mute}${I.vol}<span>Sound off</span></button><a class="open" href="${watch}" target="_blank" rel="noopener" aria-label="Watch on YouTube: ${e(p.title)}" hidden><span class="pill">Watch on YouTube ${I.play}</span></a></div>`
+    ?`<div class="media vid" data-yt="${id}" data-title="${e(p.title)}" style="background-image:url(https://i.ytimg.com/vi/${id}/maxresdefault.jpg),url(https://i.ytimg.com/vi/${id}/hqdefault.jpg)"><button class="zoom" type="button" data-open aria-label="Watch ${e(p.title)}"><span class="badge" aria-hidden="true">${I.play}</span></button>${n}<div class="vp"><div></div></div><button class="pill snd" type="button" aria-pressed="false" aria-label="Sound for ${e(p.title)}" hidden>${I.mute}${I.vol}<span>Sound off</span></button></div>`
     :`<div class="media empty">${n}<p class="msg">${placeholder?"Add a YouTube link in the SITE block to show your demo here":"Demo video coming soon"}</p></div>`;
   const demo=id
-    ?`<a class="tlink" href="${watch}" target="_blank" rel="noopener" aria-label="Play on YouTube: ${e(p.title)}">Play on YouTube ${I.up}</a>`
-    :placeholder?`<span class="demo off" aria-hidden="true">Play on YouTube ${I.play}</span>`:"";
+    ?`<button class="tlink watch" type="button" data-open aria-label="Watch ${e(p.title)}">Watch ${I.play}</button>`
+    :placeholder?`<span class="demo off" aria-hidden="true">Watch ${I.play}</span>`:"";
   const play=p.link&&!vid(p.link)?`<a class="tlink" href="${e(url(p.link))}" target="_blank" rel="noopener">Play on Roblox ${I.up}</a>`:"";
   return `<article class="card">${media}<div class="body">${p.label?`<p class="kind">${e(p.label)}</p>`:""}<h3>${e(p.title)}</h3><p class="blurb">${e(p.blurb)}</p><ul class="tags">${(p.tags||[]).map(t=>`<li>${e(t)}</li>`).join("")}</ul>${demo||play?`<div class="cardfoot">${demo}${play}</div>`:""}</div></article>`;
 };
@@ -485,7 +520,18 @@ ${S.showReviews&&S.reviews&&S.reviews.length?`<section class="sec tight"><div cl
   </div>
 </div></section>
 </main>
-<footer class="site"><div class="wrap"><span>${e(S.name)}, ${e(S.role)}. Last updated ${e(S.updated)}.</span><a href="#top">Back to top ${I.top}</a></div></footer>`;
+<footer class="site"><div class="wrap"><span>${e(S.name)}, ${e(S.role)}. Last updated ${e(S.updated)}.</span><a href="#top">Back to top ${I.top}</a></div></footer>
+${(S.projects||[]).some(p=>vid(p.yt)||vid(p.link))?`<dialog class="lb" id="lb" aria-labelledby="lb-title"><div class="lb-box">
+  <button class="lb-x" type="button" aria-label="Close video" autofocus>${I.close}</button>
+  <div class="lb-stage"></div>
+  <div class="lb-info">
+    <p class="kind" hidden></p>
+    <h3 id="lb-title"></h3>
+    <p class="blurb"></p>
+    <ul class="tags"></ul>
+    <div class="cardfoot"><a class="tlink" href="#" target="_blank" rel="noopener">Open on YouTube ${I.up}</a></div>
+  </div>
+</div></dialog>`:""}`;
 
 /* match the browser bar and tab icon to the theme */
 const cs=getComputedStyle(document.documentElement),css=n=>cs.getPropertyValue(n).trim();
@@ -501,16 +547,18 @@ document.addEventListener("click",ev=>{
 });
 
 /* Project videos. Each one plays muted, on a loop, while it is on screen; the Sound button turns the audio on (one video at a time).
-   Uses YouTube's player API so we know whether it worked. If YouTube refuses the embed (for example when the file is opened straight from a folder
-   instead of from a web address), the card falls back to the thumbnail and a "Watch on YouTube" link.
+   Clicking the video, or the Watch button, opens the watch view (a dialog with the full YouTube player and the project's details).
+   While it is open the card videos pause. Uses YouTube's player API so we know whether it worked. If YouTube refuses the embed (for example when
+   the file is opened straight from a folder instead of from a web address), the card keeps its thumbnail and the watch view offers a link to YouTube.
    Reduced-motion visitors get no autoplay: they press "Play with sound". */
 (()=>{
   const items=[...document.querySelectorAll(".media[data-yt]")];
   if(!items.length)return;
   const still=matchMedia("(prefers-reduced-motion:reduce)").matches;
-  let loading=false;const waiting=[];
+  let loading=false,apiFailed=false,modalOpen=false;const waiting=[];
   const withApi=cb=>{
     if(window.YT&&YT.Player)return cb(true);
+    if(apiFailed)return cb(false);   /* the script already failed to load once: don't wait for it again */
     waiting.push(cb);
     if(loading)return;
     loading=true;
@@ -518,12 +566,12 @@ document.addEventListener("click",ev=>{
     window.onYouTubeIframeAPIReady=()=>{if(prev)prev();waiting.splice(0).forEach(f=>f(true))};
     const s=document.createElement("script");
     s.src="https://www.youtube.com/iframe_api";
-    s.onerror=()=>waiting.splice(0).forEach(f=>f(false));
+    s.onerror=()=>{apiFailed=true;waiting.splice(0).forEach(f=>f(false))};
     document.head.append(s);
   };
   const all=[];
   items.forEach(m=>{
-    const btn=m.querySelector(".snd"),txt=btn.querySelector("span"),vp=m.querySelector(".vp"),open=m.querySelector(".open");
+    const btn=m.querySelector(".snd"),txt=btn.querySelector("span"),vp=m.querySelector(".vp");
     const c={m,inView:typeof IntersectionObserver==="undefined",sound:false,go:false,ready:false,playing:false,dead:false,building:false,p:null};
     const paint=()=>{
       if(c.dead)return;
@@ -539,7 +587,7 @@ document.addEventListener("click",ev=>{
       if(c.dead)return;
       c.dead=true;
       if(c.p){try{c.p.destroy()}catch(_){}}
-      vp.remove();btn.hidden=true;open.hidden=false;m.classList.add("failed");
+      vp.remove();btn.hidden=true;m.classList.add("failed");
     };
     const build=()=>{
       if(c.building||c.dead)return;
@@ -570,7 +618,7 @@ document.addEventListener("click",ev=>{
       });
     };
     c.sync=()=>{
-      const here=c.inView&&!document.hidden;
+      const here=c.inView&&!document.hidden&&!modalOpen;   /* cards also stay paused while the watch view is open */
       if(!here)c.sound=false;               /* scrolling away or switching tabs always turns the sound off */
       c.go=here&&(!still||c.sound);
       if(c.dead)return;
@@ -596,6 +644,66 @@ document.addEventListener("click",ev=>{
     items.forEach(m=>io.observe(m));
   }
   document.addEventListener("visibilitychange",()=>all.forEach(c=>c.sync()));
+
+  /* ----- Watch view. One dialog and one player: the player is built when it opens and destroyed when it closes (that also stops the sound). ----- */
+  const lb=document.getElementById("lb");
+  if(!lb)return;
+  const stage=lb.querySelector(".lb-stage"),ytLink=lb.querySelector(".cardfoot a"),kind=lb.querySelector(".kind");
+  let lbPlayer=null,run=0;
+  const kill=()=>{if(lbPlayer){try{lbPlayer.destroy()}catch(_){}lbPlayer=null}};
+  const openLb=m=>{
+    const id=m.dataset.yt,card=m.closest(".card"),mine=++run;
+    const watchUrl="https://www.youtube.com/watch?v="+id;
+    if(typeof lb.showModal!=="function"){window.open(watchUrl,"_blank","noopener");return}   /* very old browsers: go straight to YouTube */
+    const k=card.querySelector(".kind");
+    kind.textContent=k?k.textContent:"";kind.hidden=!k;
+    lb.querySelector("h3").textContent=m.dataset.title;
+    lb.querySelector(".blurb").textContent=card.querySelector(".blurb").textContent;
+    lb.querySelector(".tags").innerHTML=card.querySelector(".tags").innerHTML;   /* already escaped when the card was built */
+    ytLink.href=watchUrl;
+    kill();
+    stage.innerHTML="<div></div>";
+    stage.style.backgroundImage=m.style.backgroundImage;   /* same thumbnail as the card, so it never flashes black while the player loads */
+    modalOpen=true;
+    document.documentElement.classList.add("lb-open");
+    all.forEach(c=>{c.sound=false;c.sync()});   /* pause the card videos */
+    lb.showModal();
+    const fail=()=>{
+      if(mine!==run)return;
+      kill();
+      stage.innerHTML=`<div class="lb-msg"><p>YouTube won’t play this video on this page.</p><a class="btn" href="${watchUrl}" target="_blank" rel="noopener">Open on YouTube ${I.up}</a></div>`;
+    };
+    withApi(ok=>{
+      if(mine!==run||!lb.open)return;
+      if(!ok)return fail();
+      lbPlayer=new YT.Player(stage.firstElementChild,{
+        host:"https://www.youtube-nocookie.com",
+        videoId:id,
+        playerVars:{autoplay:1,rel:0,playsinline:1,modestbranding:1},
+        events:{
+          onReady:ev=>{ev.target.getIframe().title="Video: "+m.dataset.title;ev.target.playVideo()},
+          onError:fail
+        }
+      });
+    });
+  };
+  lb.addEventListener("close",()=>{
+    run++;kill();
+    stage.innerHTML="";stage.style.backgroundImage="";
+    document.documentElement.classList.remove("lb-open");
+    modalOpen=false;all.forEach(c=>c.sync());   /* cards pick up where they should: playing if on screen */
+  });
+  lb.querySelector(".lb-x").addEventListener("click",()=>lb.close());
+  /* click on the dark area outside the frame closes it (only if the click also started there, so dragging a selection out of the frame doesn't) */
+  let downOn=null;
+  lb.addEventListener("pointerdown",ev=>{downOn=ev.target});
+  lb.addEventListener("click",ev=>{if(ev.target===lb&&downOn===lb)lb.close()});
+  ytLink.addEventListener("click",()=>{try{lbPlayer&&lbPlayer.pauseVideo()}catch(_){}});   /* opening YouTube in a new tab pauses this one */
+  document.addEventListener("click",ev=>{
+    const t=ev.target.closest("[data-open]");
+    const m=t&&t.closest(".card").querySelector(".media[data-yt]");
+    if(m)openLb(m);
+  });
 })();
 
 /* Among Us crewmate that chases the mouse. Not started on touch screens or for reduced-motion visitors (the CSS hides it too). */
