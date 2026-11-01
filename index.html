@@ -163,10 +163,16 @@ h2{font-size:clamp(1.8rem,2.4vw + .7rem,2.5rem);line-height:.92}
 .media:focus-visible{outline-offset:-4px}
 .num{position:absolute;z-index:1;top:.6rem;right:.9rem;color:#fff;font:900 clamp(1.4rem,1.8vw,1.8rem)/1 var(--display);text-shadow:0 2px 14px rgba(0,0,0,.65)}
 .pill{position:absolute;z-index:1;left:.9rem;bottom:.9rem;display:inline-flex;align-items:center;gap:.7rem;padding:.65rem .9rem;background:var(--accent);color:var(--on);font:700 .72rem/1 var(--body);letter-spacing:.14em;text-transform:uppercase;transition:filter .15s}
-button.media:hover .pill{filter:brightness(1.12)}
-.media.live::after,.media.empty::after{display:none}
-.media iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-.media .peek{pointer-events:none}
+.snd:hover{filter:brightness(1.12)}
+.snd[aria-pressed=true]{background:rgba(10,7,8,.74);color:var(--text);box-shadow:inset 0 0 0 1px var(--accent)}
+.snd svg{width:16px;height:14px}
+.snd[aria-pressed=false] .ic-on,.snd[aria-pressed=true] .ic-off{display:none}
+.vid [hidden]{display:none}
+.vp{position:absolute;inset:0;opacity:.01;transition:opacity .5s}   /* not 0: some browsers refuse to autoplay a fully transparent video */
+.vp.on{opacity:1}
+.open{position:absolute;inset:0;z-index:1;display:block}   /* only shown if YouTube refuses the embed */
+.media.empty::after{display:none}
+.media iframe{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none}
 .media.empty{display:grid;place-items:center;cursor:default;background:repeating-linear-gradient(135deg,var(--surface) 0 18px,color-mix(in srgb,var(--accent) 8%,var(--surface)) 18px 36px)}
 .media.empty .msg{max-width:30ch;padding:1rem;text-align:center;color:var(--mute);font:600 .74rem/1.5 var(--body);letter-spacing:.14em;text-transform:uppercase}
 .body{display:flex;flex-direction:column;align-items:flex-start;gap:.9rem;flex:1;padding:clamp(1.2rem,2.2vw,1.6rem)}
@@ -327,8 +333,8 @@ const SITE = {
   ],
   skills: ["Modular Luau","DataStore","Movement Systems","Progression Systems","Combat Systems","User Interface","Debugging","Anti-Cheat Systems","Frameworks","OOPs Luau"],   // the grid under the hero: names only. Ten fits best (two even rows of five).
   projects: [
-    // label: short line above the title. yt: paste the YouTube link or the 11-character video ID. link: your Roblox game page (optional).
-    { label:"Commissioned solo build", title:"Pet hatching and collection", blurb:"Weighted egg odds, saved collections and a hatch animation that stays smooth with many pets.", tags:["Luau","DataStore","RNG"], yt:"", link:"" },
+    // label: short line above the title. yt: paste the YouTube link (or the 11-character video ID). The video plays on its own with no sound and visitors can turn sound on; the button under it says Play on YouTube. link: your Roblox game page (optional, adds a Play on Roblox button). A YouTube link pasted into link: also works as the video.
+    { label:"Commissioned solo build", title:"Pet hatching and collection", blurb:"Weighted egg odds, saved collections and a hatch animation that stays smooth with many pets.", tags:["Luau","DataStore","RNG"], yt:"https://youtu.be/4IJaJRBE6vw?si=A8XoaBM_3vcRDPoN", link:"" },
     { label:"Commissioned feature", title:"Parry and combat framework", blurb:"Timing windows checked on the server, with hit feedback on the client.", tags:["Combat","Server validation"], yt:"", link:"" },
     { label:"Team project", title:"Quest and dialogue system", blurb:"Quest states that save between sessions, plus dialogue that triggers objectives.", tags:["Quests","UI","DataStore"], yt:"", link:"" },
     { label:"Solo build", title:"Round and role manager", blurb:"Lobby, round timer, role assignment and clean resets between matches.", tags:["Rounds","Roles"], yt:"", link:"" },
@@ -359,7 +365,9 @@ const I={
   up:svg(14,14,'<path d="M3 11 11 3M4.5 3H11v6.5"/>'),
   down:svg(14,14,'<path d="M7 2v10M2.5 7.5 7 12l4.5-4.5"/>'),
   top:svg(14,14,'<path d="M7 12V2M2.5 6.5 7 2l4.5 4.5"/>'),
-  play:svg(12,14,'<path d="M0 0l12 7-12 7z"/>','fill="currentColor"')
+  play:svg(12,14,'<path d="M0 0l12 7-12 7z"/>','fill="currentColor"'),
+  mute:svg(16,14,'<path d="M1 5h3l4-3.5v11L4 9H1z" fill="currentColor" stroke="none"/><path d="m11 5 4 4m0-4-4 4" stroke-width="1.6" stroke-linecap="round"/>').replace("<svg ",'<svg class="ic-off" '),
+  vol:svg(16,14,'<path d="M1 5h3l4-3.5v11L4 9H1z" fill="currentColor" stroke="none"/><path d="M10.5 4.8a3.2 3.2 0 0 1 0 4.4M12.6 3a5.6 5.6 0 0 1 0 8" stroke-width="1.5" stroke-linecap="round"/>').replace("<svg ",'<svg class="ic-on" ')
 };
 
 /* theme: the SITE value, or ?theme=name in the address for a quick preview */
@@ -372,14 +380,17 @@ const placeholder=S.name==="Your Name";
 const status=S.available?"Currently available for work":"Fully booked right now";
 
 const project=(p,i)=>{
-  const id=vid(p.yt),n=`<span class="num" aria-hidden="true">${String(i+1).padStart(2,"0")}</span>`;
+  /* the video can be pasted into yt: or into link: (a YouTube address there is treated as the video) */
+  const id=vid(p.yt)||vid(p.link),n=`<span class="num" aria-hidden="true">${String(i+1).padStart(2,"0")}</span>`;
+  if(!id&&p.yt)console.warn(`Project ${i+1} (${p.title}): couldn't read this YouTube link:`,p.yt);
+  const watch=`https://www.youtube.com/watch?v=${id}`;
   const media=id
-    ?`<button class="media" type="button" data-yt="${id}" data-title="${e(p.title)}" aria-label="View with sound: ${e(p.title)}" style="background-image:url(https://i.ytimg.com/vi/${id}/maxresdefault.jpg),url(https://i.ytimg.com/vi/${id}/hqdefault.jpg)">${n}<span class="pill">View with sound ${I.play}</span></button>`
+    ?`<div class="media vid" data-yt="${id}" data-title="${e(p.title)}" style="background-image:url(https://i.ytimg.com/vi/${id}/maxresdefault.jpg),url(https://i.ytimg.com/vi/${id}/hqdefault.jpg)">${n}<div class="vp"><div></div></div><button class="pill snd" type="button" aria-pressed="false" aria-label="Sound for ${e(p.title)}" hidden>${I.mute}${I.vol}<span>Sound off</span></button><a class="open" href="${watch}" target="_blank" rel="noopener" aria-label="Watch on YouTube: ${e(p.title)}" hidden><span class="pill">Watch on YouTube ${I.play}</span></a></div>`
     :`<div class="media empty">${n}<p class="msg">${placeholder?"Add a YouTube link in the SITE block to show your demo here":"Demo video coming soon"}</p></div>`;
   const demo=id
-    ?`<a class="demo" href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener" aria-label="Watch demo on YouTube: ${e(p.title)}">Watch demo ${I.play}</a>`
-    :placeholder?`<span class="demo off" aria-hidden="true">Watch demo ${I.play}</span>`:"";
-  const play=p.link?`<a class="tlink" href="${e(url(p.link))}" target="_blank" rel="noopener">Play on Roblox ${I.up}</a>`:"";
+    ?`<a class="tlink" href="${watch}" target="_blank" rel="noopener" aria-label="Play on YouTube: ${e(p.title)}">Play on YouTube ${I.up}</a>`
+    :placeholder?`<span class="demo off" aria-hidden="true">Play on YouTube ${I.play}</span>`:"";
+  const play=p.link&&!vid(p.link)?`<a class="tlink" href="${e(url(p.link))}" target="_blank" rel="noopener">Play on Roblox ${I.up}</a>`:"";
   return `<article class="card">${media}<div class="body">${p.label?`<p class="kind">${e(p.label)}</p>`:""}<h3>${e(p.title)}</h3><p class="blurb">${e(p.blurb)}</p><ul class="tags">${(p.tags||[]).map(t=>`<li>${e(t)}</li>`).join("")}</ul>${demo||play?`<div class="cardfoot">${demo}${play}</div>`:""}</div></article>`;
 };
 
@@ -481,48 +492,111 @@ const cs=getComputedStyle(document.documentElement),css=n=>cs.getPropertyValue(n
 document.querySelector("meta[name=theme-color]").content=css("--bg");
 document.querySelector("link[rel=icon]").href="data:image/svg+xml,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M26 4h14L28 60H14z" fill="${css("--accent")}"/><path d="M46 4h6L40 60h-6z" fill="${css("--accent")}"/></svg>`);
 
-/* click a demo to load the video; click "Copy username" to copy it */
+/* click "Copy username" to copy it */
 const say=t=>{const l=document.getElementById("live");l.textContent="";setTimeout(()=>l.textContent=t,50)};
 const copyText=t=>(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).catch(()=>{const a=document.createElement("textarea");a.value=t;a.style.cssText="position:fixed;opacity:0";document.body.append(a);a.select();try{document.execCommand("copy")}catch(_){}a.remove()});
 document.addEventListener("click",ev=>{
-  const b=ev.target.closest("[data-yt]");
-  if(b){
-    const card=b.closest(".card"),m=card&&card.querySelector(".media[data-yt]");
-    if(m){
-      const f=document.createElement("iframe"),box=document.createElement("div");
-      f.src=`https://www.youtube-nocookie.com/embed/${b.dataset.yt}?autoplay=1&rel=0`;
-      f.title="Demo: "+b.dataset.title;
-      f.allow="autoplay; encrypted-media; picture-in-picture; fullscreen";
-      f.referrerPolicy="strict-origin-when-cross-origin";
-      f.allowFullscreen=true;
-      box.className="media live";box.append(f);m.replaceWith(box);f.focus();
-    }else if(card){const f=card.querySelector(".media.live iframe");if(f)f.focus()}
-    return;
-  }
   const c=ev.target.closest("[data-copy]");
   if(c){const t=c.textContent;copyText(c.dataset.copy).then(()=>{c.textContent="Copied";say("Discord username copied");setTimeout(()=>c.textContent=t,1600)})}
 });
 
-/* hover a card that has a demo to preview it, muted; leaving the card stops it. Mouse only, and skipped for reduced-motion visitors. */
-if(matchMedia("(hover:hover) and (pointer:fine)").matches&&!matchMedia("(prefers-reduced-motion:reduce)").matches){
-  document.querySelectorAll(".card").forEach(card=>{
-    let t,f;
-    const stop=()=>{clearTimeout(t);if(f)f.remove();f=null};
-    card.addEventListener("pointerenter",()=>{
-      const m=card.querySelector(".media[data-yt]");
-      if(!m)return;
-      t=setTimeout(()=>{
+/* Project videos. Each one plays muted, on a loop, while it is on screen; the Sound button turns the audio on (one video at a time).
+   Uses YouTube's player API so we know whether it worked. If YouTube refuses the embed (for example when the file is opened straight from a folder
+   instead of from a web address), the card falls back to the thumbnail and a "Watch on YouTube" link.
+   Reduced-motion visitors get no autoplay: they press "Play with sound". */
+(()=>{
+  const items=[...document.querySelectorAll(".media[data-yt]")];
+  if(!items.length)return;
+  const still=matchMedia("(prefers-reduced-motion:reduce)").matches;
+  let loading=false;const waiting=[];
+  const withApi=cb=>{
+    if(window.YT&&YT.Player)return cb(true);
+    waiting.push(cb);
+    if(loading)return;
+    loading=true;
+    const prev=window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady=()=>{if(prev)prev();waiting.splice(0).forEach(f=>f(true))};
+    const s=document.createElement("script");
+    s.src="https://www.youtube.com/iframe_api";
+    s.onerror=()=>waiting.splice(0).forEach(f=>f(false));
+    document.head.append(s);
+  };
+  const all=[];
+  items.forEach(m=>{
+    const btn=m.querySelector(".snd"),txt=btn.querySelector("span"),vp=m.querySelector(".vp"),open=m.querySelector(".open");
+    const c={m,inView:typeof IntersectionObserver==="undefined",sound:false,go:false,ready:false,playing:false,dead:false,building:false,p:null};
+    const paint=()=>{
+      if(c.dead)return;
+      btn.setAttribute("aria-pressed",String(c.sound));
+      txt.textContent=c.sound?"Sound on":c.playing?"Sound off":"Play with sound";
+    };
+    const apply=()=>{                       /* make the player match what we want right now */
+      if(!c.ready||c.dead)return;
+      if(c.sound){c.p.unMute();c.p.setVolume(100)}else c.p.mute();
+      if(c.go)c.p.playVideo();else c.p.pauseVideo();
+    };
+    const fail=()=>{
+      if(c.dead)return;
+      c.dead=true;
+      if(c.p){try{c.p.destroy()}catch(_){}}
+      vp.remove();btn.hidden=true;open.hidden=false;m.classList.add("failed");
+    };
+    const build=()=>{
+      if(c.building||c.dead)return;
+      c.building=true;
+      withApi(ok=>{
+        if(c.dead)return;
+        if(!ok)return fail();
         const id=m.dataset.yt;
-        f=document.createElement("iframe");
-        f.className="peek";f.tabIndex=-1;f.setAttribute("aria-hidden","true");
-        f.allow="autoplay";f.referrerPolicy="strict-origin-when-cross-origin";
-        f.src=`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&controls=0&disablekb=1&playsinline=1&rel=0&loop=1&playlist=${id}`;
-        m.prepend(f);
-      },350);
-    });
-    card.addEventListener("pointerleave",stop);
+        c.p=new YT.Player(vp.firstElementChild,{
+          host:"https://www.youtube-nocookie.com",
+          videoId:id,
+          playerVars:{autoplay:1,mute:c.sound?0:1,controls:0,disablekb:1,fs:0,iv_load_policy:3,rel:0,playsinline:1,modestbranding:1,loop:1,playlist:id},
+          events:{
+            onReady:ev=>{
+              c.ready=true;
+              const f=ev.target.getIframe();f.title="Demo: "+m.dataset.title;f.tabIndex=-1;
+              apply();
+              setTimeout(()=>{if(!c.playing&&!c.dead){btn.hidden=false;paint()}},3500);   /* autoplay was blocked: offer a Play button */
+            },
+            onStateChange:ev=>{
+              if(ev.data===1){c.playing=true;vp.classList.add("on");btn.hidden=false;paint()}
+              else if(ev.data===2){c.playing=false;paint()}
+              else if(ev.data===0){ev.target.seekTo(0);ev.target.playVideo()}
+            },
+            onError:fail
+          }
+        });
+      });
+    };
+    c.sync=()=>{
+      const here=c.inView&&!document.hidden;
+      if(!here)c.sound=false;               /* scrolling away or switching tabs always turns the sound off */
+      c.go=here&&(!still||c.sound);
+      if(c.dead)return;
+      if(c.go&&!c.p)build();else apply();
+      paint();
+    };
+    c.set=on=>{
+      if(on){c.inView=true;all.forEach(o=>{if(o!==c&&o.sound){o.sound=false;o.sync()}})}
+      c.sound=on;c.sync();
+    };
+    btn.addEventListener("click",()=>c.set(!c.sound));
+    if(still){btn.hidden=false;paint()}
+    all.push(c);
   });
-}
+  if(typeof IntersectionObserver==="undefined"){all.forEach(c=>c.sync())}
+  else{
+    const byEl=new Map(all.map(c=>[c.m,c]));
+    const io=new IntersectionObserver(es=>es.forEach(en=>{
+      const c=byEl.get(en.target);
+      if(en.intersectionRatio>=.4){c.inView=true;c.sync()}        /* start when mostly visible... */
+      else if(en.intersectionRatio<.12){c.inView=false;c.sync()}   /* ...stop only when nearly gone, so it doesn't flicker */
+    }),{threshold:[0,.12,.4]});
+    items.forEach(m=>io.observe(m));
+  }
+  document.addEventListener("visibilitychange",()=>all.forEach(c=>c.sync()));
+})();
 
 /* Among Us crewmate that chases the mouse. Not started on touch screens or for reduced-motion visitors (the CSS hides it too). */
 (()=>{
