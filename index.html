@@ -25,7 +25,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M26 4h14L28 60H14z' fill='%23e11d26'/%3E%3Cpath d='M46 4h6L40 60h-6z' fill='%23e11d26'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@800;900&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,800;0,900;1,800&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ---------- Colour themes. Each one is a full set of colours; the SITE block picks one. ---------- */
 :root{
@@ -102,18 +102,35 @@ footer.site a:hover::after,footer.site a:focus-visible::after{
 .sq svg{width:11px;height:11px}
 .topcta:hover .sq,.topcta:focus-visible .sq{filter:brightness(1.12)}
 
-/* ---------- Hero ---------- */
-.hero{position:relative;isolation:isolate;overflow:hidden;padding:clamp(3rem,7vw,5.5rem) 0 clamp(2.6rem,6vw,4.5rem)}
-.hero::before{content:"";position:absolute;z-index:-2;top:-45%;right:-20%;width:80%;aspect-ratio:1;background:radial-gradient(closest-side,var(--glow),transparent);pointer-events:none}
-.waves{position:absolute;inset:0;z-index:-1;width:100%;height:100%;pointer-events:none;color:var(--line2);color:color-mix(in srgb,var(--hi) 24%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent 6%,#000 58%);mask-image:linear-gradient(90deg,transparent 6%,#000 58%)}
+/* ---------- Hero ----------
+   Fills the screen under the top bar (svh = the visible height on phones). The name sits in the middle with a line above and below it,
+   then availability and the buttons; the bottom row has the scroll link and reply time.
+   Two dotted shapes sit on the sides: a blocky R6 character on the left, studded bricks on the right. They are drawn once and moved with CSS
+   (a slow float), which the graphics card does for free, so the page stays smooth. */
+.hero{position:relative;isolation:isolate;overflow:hidden;display:grid;grid-template-rows:1fr auto;min-height:calc(100vh - var(--bar-h) - 1px);min-height:calc(100svh - var(--bar-h) - 1px);padding:clamp(1rem,2.4vh,2rem) 0 clamp(1.2rem,3vh,2rem)}
+.hero::before{content:"";position:absolute;z-index:-2;top:50%;left:50%;width:min(70rem,90vw);aspect-ratio:1.5;transform:translate(-50%,-50%);background:radial-gradient(closest-side,var(--glow),transparent);pointer-events:none}
+.waves{position:absolute;inset:0;z-index:-1;width:100%;height:100%;pointer-events:none;color:var(--line2);color:color-mix(in srgb,var(--hi) 24%,transparent);-webkit-mask-image:radial-gradient(ellipse 58% 62% at 50% 50%,transparent 30%,#000 92%);mask-image:radial-gradient(ellipse 58% 62% at 50% 50%,transparent 30%,#000 92%)}
 .waves path{vector-effect:non-scaling-stroke}
-.intro{--h:clamp(2.1rem,3.4vw + .9rem,3.6rem);position:relative;padding-left:clamp(1.3rem,3vw,2.3rem)}
-.intro::before{content:"";position:absolute;left:4px;top:calc(var(--h)*.2 + 5px);bottom:.4rem;width:2px;background:var(--accent);transform-origin:top}
-.intro::after{content:"";position:absolute;left:0;top:calc(var(--h)*.2);width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 .22rem color-mix(in srgb,var(--accent) 24%,transparent)}
-.hero h1{font:800 var(--h)/1.04 var(--body);letter-spacing:-.03em;text-transform:none;text-wrap:balance;overflow-wrap:anywhere}
-.nm{color:var(--accent)}
-.about{max-width:38ch;margin-top:clamp(.9rem,2vw,1.3rem);font:500 clamp(1.05rem,1.5vw,1.3rem)/1.4 var(--body);text-wrap:balance}
-.sub{margin-top:.8rem;color:var(--mute);max-width:56ch}
+.hero-row{display:flex;justify-content:space-between;align-items:center;gap:1rem 2rem;flex-wrap:wrap}
+.hero-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-block:clamp(1.4rem,4vh,3rem);text-align:center}
+.hero h1{display:inline-flex;flex-direction:column;font-family:var(--display);font-weight:800;text-transform:uppercase;line-height:1}
+.hero h1 .hi,.hero h1 .role{font:800 clamp(1.4rem,1rem + 1.6vw,2.6rem)/1 var(--display);font-style:italic;letter-spacing:.01em}
+.hero h1 .hi{align-self:flex-start;margin-left:-.9em;color:var(--text)}
+.hero h1 .role{align-self:flex-end;margin-right:-1.1em;color:var(--accent)}
+.hero h1 .big{margin:.04em 0 .02em;font:900 clamp(4.4rem,min(17vw,32vh),15rem)/.82 var(--display);letter-spacing:-.005em;color:var(--text)}
+.hero h1 .big i{color:var(--accent);font-style:normal}
+.hero-mid .status{margin-top:clamp(1.6rem,4.4vh,2.6rem);font-weight:600}
+.hero .actions{justify-content:center;margin-top:clamp(1rem,2.6vh,1.5rem)}
+.hero-bot{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:end}
+.explore{flex:none;justify-self:center;display:inline-flex;align-items:center;gap:.9rem;padding:.6rem 0 .7rem;border-bottom:1px solid var(--line2);color:var(--text);font:600 .78rem/1 var(--body);letter-spacing:.14em;text-transform:uppercase;text-decoration:none;transition:border-color .2s}
+.explore svg{width:12px;height:12px;color:var(--accent)}
+.explore:hover,.explore:focus-visible{border-color:var(--accent)}
+.reply{display:grid;justify-items:end;justify-self:end;gap:.35rem;text-align:right}
+.reply small{color:var(--mute);font-size:.68rem}
+.reply span{font-size:.9rem;font-weight:600}
+.hero-art{position:absolute;z-index:-1;aspect-ratio:1;pointer-events:none;will-change:transform}
+.hero-art.l{left:clamp(-2rem,-1vw,0rem);top:15%;width:clamp(13rem,24vw,26rem)}
+.hero-art.r{right:clamp(-1rem,-.5vw,0rem);top:22%;width:clamp(12rem,21vw,23rem)}
 .actions{display:flex;align-items:center;gap:1rem 2.2rem;flex-wrap:wrap;margin-top:clamp(1.5rem,3vw,2.2rem)}
 .status{display:flex;align-items:center;gap:.7rem;margin-top:1.5rem;color:var(--text)}
 .dot{width:.5rem;height:.5rem;flex:none;border-radius:50%;background:var(--accent);box-shadow:0 0 0 .24rem color-mix(in srgb,var(--accent) 28%,transparent)}
@@ -128,9 +145,9 @@ footer.site a:hover::after,footer.site a:focus-visible::after{
 .tlink{display:inline-flex;align-items:center;gap:.55rem;padding:.55rem 0;font:700 .78rem/1.2 var(--body);letter-spacing:.14em;text-transform:uppercase;text-decoration:none}
 .tlink svg{width:11px;height:11px;color:var(--hi)}
 
-/* ---------- Skills (under the hero): names only, as small boxes styled like the contact card.
+/* ---------- Skills strip (between Work and Capabilities): names only, as small boxes styled like the contact card.
    Two rows drift in opposite directions and fade out at both ends. With reduced motion they sit still and wrap. ---------- */
-.skillbar{padding:clamp(1.3rem,3vw,2rem) 0;border-top:2px solid var(--accent)}
+.skillbar{padding:clamp(1.3rem,3vw,2rem) 0;border-top:2px solid var(--accent);border-bottom:1px solid var(--line)}
 .mq{max-width:1320px;margin-inline:auto;padding-inline:clamp(1rem,4vw,2.5rem)}
 .mq+.mq{margin-top:.75rem}
 .track{display:flex;flex-wrap:wrap;gap:.75rem}
@@ -153,15 +170,47 @@ footer.site a:hover::after,footer.site a:focus-visible::after{
 h2{font-size:clamp(1.8rem,2.4vw + .7rem,2.5rem);line-height:.92}
 .lede{color:var(--mute);max-width:46ch}
 
-/* ---------- Projects ---------- */
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(1rem,2vw,1.6rem)}
-.card{display:flex;flex-direction:column;overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:6px;transition:border-color .2s,box-shadow .2s}
-.card:hover{border-color:var(--accent);box-shadow:0 22px 50px -30px var(--glow)}
-.card:has(:focus-visible){border-color:var(--accent)}
-.media{position:relative;display:block;width:100%;aspect-ratio:16/9;overflow:hidden;background:#000 center/cover no-repeat;border-bottom:1px solid var(--line);text-align:left}
-.media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.7));pointer-events:none}
+/* ---------- Work ----------
+   Left: a column that stays pinned while you scroll (label, big heading, count, progress line, dotted logo).
+   Right: one large card per project. The card you're looking at is lit; the others are dimmed until you reach them. */
+#work{border-top:2px solid var(--accent)}
+.wk{display:grid;grid-template-columns:minmax(0,.74fr) minmax(0,1.26fr);gap:clamp(2rem,5vw,5.5rem);align-items:start}
+.wk-side{position:sticky;top:calc(var(--bar-h) + clamp(1.4rem,5vh,3.2rem))}
+.eyebrow{color:var(--mute)}
+.eyebrow b{color:var(--hi);font-weight:600}
+.wk-title{margin-top:clamp(1.1rem,3vh,1.8rem);font:800 clamp(3rem,4.6vw,5.2rem)/.86 var(--display);letter-spacing:-.005em}
+.wk-title em{display:block;color:var(--accent);font-style:italic}
+.wk-side .lede{margin-top:clamp(1.1rem,3vh,1.8rem);font-size:1.05rem;line-height:1.55}
+.wk-side .lede b{display:block;color:var(--text);font-weight:600}
+.wk-prog{display:flex;align-items:center;gap:1rem;margin-top:clamp(1.5rem,4vh,2.6rem);color:var(--mute);font:600 .8rem/1 var(--body);letter-spacing:.14em;font-variant-numeric:tabular-nums}
+.wk-prog .cur{display:inline-block;min-width:2ch;color:var(--text)}
+.wk-prog .ln{position:relative;width:clamp(6rem,10vw,9rem);height:1px;overflow:hidden;background:var(--line2)}
+.wk-prog .ln i{position:absolute;inset:0;background:var(--accent);transform-origin:left;transform:scaleX(var(--p,0))}
+.wk-art{display:block;width:min(15rem,27vh);aspect-ratio:1;margin:clamp(.8rem,3vh,2rem) 0 0 -.6rem}
+.plist{display:grid;gap:clamp(4rem,11vh,7.5rem)}
+.proj{min-width:0;transition:opacity .55s ease}
+.wk.live .proj{opacity:.32}
+.wk.live .proj.on,.wk.live .proj:focus-within{opacity:1}
+.wk.live .proj:not(.on):hover{opacity:.65}
+.media{position:relative;display:block;width:100%;aspect-ratio:16/9;overflow:hidden;background:#000 center/cover no-repeat;border:1px solid var(--line);border-radius:6px;text-align:left;transition:border-color .2s,box-shadow .2s}
+.media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.7));pointer-events:none}
 .media:focus-visible{outline-offset:-4px}
-.num{position:absolute;z-index:1;pointer-events:none;top:.6rem;right:.9rem;color:#fff;font:900 clamp(1.4rem,1.8vw,1.8rem)/1 var(--display);text-shadow:0 2px 14px rgba(0,0,0,.65)}
+.media.vid:hover{border-color:var(--accent);box-shadow:0 30px 70px -40px var(--glow)}
+.chip{position:absolute;right:.9rem;bottom:.9rem;display:inline-flex;align-items:center;gap:.6rem;padding:.62rem .85rem;background:rgba(10,7,8,.78);background:color-mix(in srgb,var(--bg) 80%,transparent);border:1px solid var(--line2);color:var(--text);font:700 .72rem/1 var(--body);letter-spacing:.14em;text-transform:uppercase;transition:background .2s,border-color .2s,color .2s}
+.chip svg{width:10px;height:10px;color:var(--hi)}
+.zoom:hover .chip,.zoom:focus-visible .chip{background:var(--accent);border-color:var(--accent);color:var(--on)}
+.zoom:hover .chip svg,.zoom:focus-visible .chip svg{color:currentColor}
+.pbody{display:grid;grid-template-columns:2.6rem minmax(0,1fr) auto;gap:.85rem .5rem;padding-top:clamp(1.2rem,2.4vw,1.8rem)}
+.pnum{padding-top:.15rem;color:var(--mute);font:600 .75rem/1 var(--body);letter-spacing:.14em}
+.ptitle .kind{margin-bottom:.5rem}
+.ptitle h3{font-size:clamp(1.75rem,2.5vw,2.5rem);line-height:.94;overflow-wrap:anywhere}
+.parrow{display:grid;place-items:center;width:2.75rem;height:2.75rem;border:1px solid var(--line2);border-radius:50%;color:var(--text);text-decoration:none;transition:background .2s,border-color .2s,color .2s}
+.parrow svg{width:12px;height:12px;transition:transform .25s cubic-bezier(.22,1,.36,1)}
+.parrow:hover,.parrow:focus-visible{background:var(--accent);border-color:var(--accent);color:var(--on)}
+.parrow:hover svg,.parrow:focus-visible svg{transform:translate(2px,-2px)}
+.pbody>.blurb,.pbody>.tags,.pbody>.cardfoot{grid-column:2/-1}
+.pbody>.blurb{max-width:60ch;font-size:.95rem}
+.pbody>.cardfoot{margin:0;padding:0}
 .pill{position:absolute;z-index:1;left:.9rem;bottom:.9rem;display:inline-flex;align-items:center;gap:.7rem;padding:.65rem .9rem;background:var(--accent);color:var(--on);font:700 .72rem/1 var(--body);letter-spacing:.14em;text-transform:uppercase;transition:filter .15s}
 .snd:hover{filter:brightness(1.12)}
 .snd[aria-pressed=true]{background:rgba(10,7,8,.74);color:var(--text);box-shadow:inset 0 0 0 1px var(--accent)}
@@ -177,12 +226,11 @@ h2{font-size:clamp(1.8rem,2.4vw + .7rem,2.5rem);line-height:.92}
 .zoom:hover,.zoom:focus-visible{background:rgba(10,7,8,.3)}
 .zoom:hover .badge,.zoom:focus-visible .badge,.media.failed .badge{opacity:1;transform:none}   /* failed = YouTube refused the embed: thumbnail only, so the badge stays visible */
 .media.empty::after{display:none}
+.lhint{position:absolute;z-index:2;left:.9rem;right:.9rem;top:.9rem;padding:.6rem .8rem;background:rgba(10,7,8,.85);border-left:2px solid var(--accent);color:var(--text);font:600 .78rem/1.45 var(--body);pointer-events:none}
 .media iframe{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none}
 .media.empty{display:grid;place-items:center;cursor:default;background:repeating-linear-gradient(135deg,var(--surface) 0 18px,color-mix(in srgb,var(--accent) 8%,var(--surface)) 18px 36px)}
 .media.empty .msg{max-width:30ch;padding:1rem;text-align:center;color:var(--mute);font:600 .74rem/1.5 var(--body);letter-spacing:.14em;text-transform:uppercase}
-.body{display:flex;flex-direction:column;align-items:flex-start;gap:.9rem;flex:1;padding:clamp(1.2rem,2.2vw,1.6rem)}
 .kind{color:var(--mute);font:700 .7rem/1.2 var(--body);letter-spacing:.16em;text-transform:uppercase}
-.body h3{font-size:clamp(1.4rem,1.6vw,1.75rem);line-height:.96}
 .blurb{color:var(--mute);font-size:.9rem}
 .tags{display:flex;flex-wrap:wrap;gap:.45rem}
 .tags li{padding:.28rem .65rem;border:1px solid var(--line2);border-radius:4px;font-size:.78rem}
@@ -278,7 +326,28 @@ footer.site a:hover{color:var(--text)}
 
 /* ---------- Smaller screens ---------- */
 @media(max-width:1100px){
-  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hero-art{opacity:.55}
+  .hero-art.l{left:-8vw}
+  .hero-art.r{right:-8vw}
+}
+@media(max-width:760px){
+  .hero-art{display:none}
+  .hero h1 .big{font-size:clamp(4.4rem,23vw,7.5rem)}
+  .hero h1 .hi{margin-left:0}
+  .hero h1 .role{margin-right:0}
+  .hero-bot{grid-template-columns:1fr;justify-items:center;gap:1.2rem}
+  .hero-bot>span:empty{display:none}
+  .reply{justify-items:center;justify-self:center;text-align:center}
+}
+@media(max-height:720px){
+  .wk-art{display:none}   /* short windows: keep the pinned column from running off the bottom */
+}
+@media(max-width:980px){
+  .wk{grid-template-columns:1fr;gap:2.4rem}
+  .wk-side{position:static}
+  .wk-title{font-size:clamp(2.8rem,11vw,4.4rem)}
+  .wk-prog,.wk-art{display:none}
+  .plist{gap:3.6rem}
 }
 @media(max-width:860px){
   .bar{grid-template-columns:1fr auto}
@@ -286,7 +355,8 @@ footer.site a:hover{color:var(--text)}
   .cgrid{grid-template-columns:1fr}
 }
 @media(max-width:700px){
-  .grid{grid-template-columns:1fr}
+  .pbody{grid-template-columns:2rem minmax(0,1fr) auto}
+  .chip{display:none}
   .rows{grid-template-columns:1fr}
   thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
   tr{display:block;padding:1rem 1.2rem;border-top:1px solid var(--line)}
@@ -308,15 +378,26 @@ footer.site a:hover{color:var(--text)}
 @keyframes crew-spin{to{transform:rotate(-360deg)}}
 @media(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce),print{.crew{display:none}}
 
-/* ---------- One entrance on load. The only other thing that moves on its own is the skills rows. ---------- */
+/* ---------- One entrance on load. The only other things that move on their own are the skills rows and the dotted logo in Work. ---------- */
 @media(prefers-reduced-motion:no-preference){
-  .intro::before{animation:draw 1s cubic-bezier(.2,.7,.2,1) both}
-  .intro>*{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
-  .intro>:nth-child(2){animation-delay:.09s}
-  .intro>:nth-child(3){animation-delay:.18s}
-  .intro>:nth-child(4){animation-delay:.27s}
-  .intro>:nth-child(5){animation-delay:.36s}
-  @keyframes draw{from{transform:scaleY(0)}}
+  .wk-prog .ln i{transition:transform .35s cubic-bezier(.22,1,.36,1)}
+  .wk-art{rotate:calc(var(--p,0) * 90deg);animation:sway 8s ease-in-out infinite;will-change:transform}
+  @keyframes sway{0%,100%{transform:rotate(-8deg) scaleX(.92)}50%{transform:rotate(8deg) scaleX(1)}}
+  .wk-prog .cur.tick{animation:tick .45s cubic-bezier(.2,.7,.2,1)}
+  @keyframes tick{from{opacity:0;transform:translateY(.5em)}}
+  .hero h1>*,.hero-mid>:not(h1){animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
+  .hero h1 .big{animation-delay:.08s}
+  .hero h1 .role{animation-delay:.16s}
+  .hero-mid>.status{animation-delay:.24s}
+  .hero-mid>.actions{animation-delay:.32s}
+  .hero-row{animation:fade 1.1s .35s ease-out both}
+  .hero-art.l{animation:fade 1.1s .35s ease-out both,float 7s ease-in-out infinite}
+  .hero-art.r{animation:fade 1.1s .35s ease-out both,float2 9s ease-in-out infinite}
+  @keyframes float{50%{transform:translateY(-14px) rotate(-2deg)}}
+  @keyframes float2{50%{transform:translateY(-12px) rotate(3deg)}}
+  .explore svg{animation:bob 1.8s ease-in-out infinite}
+  @keyframes fade{from{opacity:0}}
+  @keyframes bob{50%{transform:translateY(3px)}}
   @keyframes rise{from{opacity:0;transform:translateY(.4em)}}
 }
 @media(prefers-reduced-motion:reduce){
@@ -349,8 +430,8 @@ const SITE = {
   theme: "crimson",   // crimson (red and black), cobalt, amber, violet, mint or rose. Preview one by adding ?theme=amber to the page address.
   name: "Aayush",
   role: "Roblox Scripter",
-  intro: "I am a Roblox Scripter building complete features, from server logic and saving to the UI players touch.",   // the lines under "Hi, I’m ..."
-  tagline: "Game systems, data saving and server-side checks. Send me the scope and I’ll reply with a price and timeline.",   // optional smaller line under the intro
+  intro: "I am a Roblox Scripter building complete features, from server logic and saving to the UI players touch.",   // not shown on the page right now (the hero keeps just your name). Kept here in case you want it back.
+  tagline: "Game systems, data saving and server-side checks. Send me the scope and I’ll reply with a price and timeline.",   // not shown on the page right now either
   years: "1 Year",
   available: true,
   hours: "16 hours a Day, UTC+5:30",
@@ -366,7 +447,12 @@ const SITE = {
     ["DataStore",["DataStore2","ProfileService","DataStore saving","DataStore security","DataStore optimization"]],
     ["Debugging",["Debugging","Testing","Optimizing","Performance Tuning"]]
   ],
-  skills: ["Modular Luau","DataStore","Movement Systems","Progression Systems","Combat Systems","User Interface","Debugging","Anti-Cheat Systems","Frameworks","OOPs Luau"],   // the grid under the hero: names only. Ten fits best (two even rows of five).
+  work: {   // the pinned column beside your projects. title: first line, then the line in red italics. intro: the line under the project count.
+    label: "Selected work",
+    title: ["Built", "to be played."],
+    intro: "Each one with a demo you can watch with sound."
+  },
+  skills: ["Modular Luau","DataStore","Movement Systems","Progression Systems","Combat Systems","User Interface","Debugging","Anti-Cheat Systems","Frameworks","OOPs Luau"],   // the drifting strip between Work and Capabilities: names only. Ten fits best (two even rows of five).
   projects: [
     // label: short line above the title. yt: paste the YouTube link (or the 11-character video ID). The video plays on its own with no sound and visitors can turn sound on; clicking the video, or the Watch button under it, opens it in a larger watch view. link: your Roblox game page (optional, adds a Play on Roblox button). A YouTube link pasted into link: also works as the video.
     { label:"Commissioned solo build", title:"Pet hatching and collection", blurb:"Weighted egg odds, saved collections and a hatch animation that stays smooth with many pets.", tags:["Luau","DataStore","RNG"], yt:"https://youtu.be/iELzjT-pCWo?si=o-oqGe1KVwwcoJM0", link:"" },
@@ -417,17 +503,23 @@ const status=S.available?"Currently available for work":"Fully booked right now"
 
 const project=(p,i)=>{
   /* the video can be pasted into yt: or into link: (a YouTube address there is treated as the video) */
-  const id=vid(p.yt)||vid(p.link),n=`<span class="num" aria-hidden="true">${String(i+1).padStart(2,"0")}</span>`;
+  const id=vid(p.yt)||vid(p.link),n=String(i+1).padStart(2,"0");
   if(!id&&p.yt)console.warn(`Project ${i+1} (${p.title}): couldn't read this YouTube link:`,p.yt);
+  const roblox=p.link&&!vid(p.link)?url(p.link):"";
   const media=id
-    ?`<div class="media vid" data-yt="${id}" data-title="${e(p.title)}" style="background-image:url(https://i.ytimg.com/vi/${id}/maxresdefault.jpg),url(https://i.ytimg.com/vi/${id}/hqdefault.jpg)"><button class="zoom" type="button" data-open aria-label="Watch ${e(p.title)}"><span class="badge" aria-hidden="true">${I.play}</span></button>${n}<div class="vp"><div></div></div><button class="pill snd" type="button" aria-pressed="false" aria-label="Sound for ${e(p.title)}" hidden>${I.mute}${I.vol}<span>Sound off</span></button></div>`
-    :`<div class="media empty">${n}<p class="msg">${placeholder?"Add a YouTube link in the SITE block to show your demo here":"Demo video coming soon"}</p></div>`;
-  const demo=id
-    ?`<button class="tlink watch" type="button" data-open aria-label="Watch ${e(p.title)}">Watch ${I.play}</button>`
-    :placeholder?`<span class="demo off" aria-hidden="true">Watch ${I.play}</span>`:"";
-  const play=p.link&&!vid(p.link)?`<a class="tlink" href="${e(url(p.link))}" target="_blank" rel="noopener">Play on Roblox ${I.up}</a>`:"";
-  return `<article class="card">${media}<div class="body">${p.label?`<p class="kind">${e(p.label)}</p>`:""}<h3>${e(p.title)}</h3><p class="blurb">${e(p.blurb)}</p><ul class="tags">${(p.tags||[]).map(t=>`<li>${e(t)}</li>`).join("")}</ul>${demo||play?`<div class="cardfoot">${demo}${play}</div>`:""}</div></article>`;
+    ?`<div class="media vid" data-yt="${id}" data-title="${e(p.title)}" style="background-image:url(https://i.ytimg.com/vi/${id}/maxresdefault.jpg),url(https://i.ytimg.com/vi/${id}/hqdefault.jpg)"><button class="zoom" type="button" data-open aria-label="Watch ${e(p.title)}"><span class="badge" aria-hidden="true">${I.play}</span><span class="chip" aria-hidden="true"><span>Watch project</span>${I.up}</span></button><div class="vp"><div></div></div><button class="pill snd" type="button" aria-pressed="false" aria-label="Sound for ${e(p.title)}" hidden>${I.mute}${I.vol}<span>Sound off</span></button></div>`
+    :`<div class="media empty"><p class="msg">${placeholder?"Add a YouTube link in the SITE block to show your demo here":"Demo video coming soon"}</p></div>`;
+  /* the round arrow beside the title: opens the watch view, or the Roblox game if there's no video */
+  const arrow=id
+    ?`<button class="parrow" type="button" data-open aria-label="Watch ${e(p.title)}">${I.up}</button>`
+    :roblox?`<a class="parrow" href="${e(roblox)}" target="_blank" rel="noopener" aria-label="Play ${e(p.title)} on Roblox">${I.up}</a>`:"<span></span>";
+  const play=roblox&&id?`<div class="cardfoot"><a class="tlink" href="${e(roblox)}" target="_blank" rel="noopener">Play on Roblox ${I.up}</a></div>`:"";
+  return `<article class="proj">${media}<div class="pbody"><span class="pnum" aria-hidden="true">${n}</span><div class="ptitle">${p.label?`<p class="kind">${e(p.label)}</p>`:""}<h3>${e(p.title)}</h3></div>${arrow}<p class="blurb">${e(p.blurb)}</p><ul class="tags">${(p.tags||[]).map(t=>`<li>${e(t)}</li>`).join("")}</ul>${play}</div></article>`;
 };
+const COUNT=["No","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve"];
+const WK=Object.assign({label:"Selected work",title:["Selected","work."],intro:""},S.work||{});
+const wkTitle=Array.isArray(WK.title)?WK.title:[WK.title];
+const nProj=(S.projects||[]).length;
 
 /* soft flowing lines behind the hero */
 const waves=()=>{
@@ -472,20 +564,31 @@ ${placeholder?`<div class="notice">Placeholder content. Edit the SITE block in i
 <main id="top">
 <section class="hero${S.available?"":" off"}">
   <svg class="waves" viewBox="0 0 1440 640" preserveAspectRatio="xMidYMid slice" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1">${waves()}</svg>
-  <div class="wrap"><div class="intro">
-    <h1>Hi, I’m <span class="nm">${e(S.name)}</span></h1>
-    ${S.intro?`<p class="about">${e(S.intro)}</p>`:""}
-    ${S.tagline?`<p class="sub">${e(S.tagline)}</p>`:""}
-    <div class="actions"><a class="btn" href="#work">View projects ${I.down}</a><a class="hire" href="#contact">Hire me ${I.up}</a></div>
+  <canvas class="hero-art l" data-shape="r6" aria-hidden="true"></canvas>
+  <canvas class="hero-art r" data-shape="bricks" aria-hidden="true"></canvas>
+  <div class="wrap hero-mid">
+    <h1><span class="hi">Hi, I’m</span><span class="big">${e(S.name)}<i>.</i></span><span class="role">${e(S.role)}.</span></h1>
     <p class="status caps"><i class="dot"></i>${e(status)}</p>
-  </div></div>
+    <div class="actions"><a class="btn" href="#work">View projects ${I.down}</a><a class="hire" href="#contact">Hire me ${I.up}</a></div>
+  </div>
+  <div class="wrap hero-row hero-bot">
+    <span></span>
+    <a class="explore" href="#work">Explore my work ${I.down}</a>
+    ${S.reply?`<p class="reply"><small class="caps">Reply time</small><span>${e(S.reply)}</span></p>`:"<span></span>"}
+  </div>
 </section>
+<section class="sec" id="work" aria-labelledby="work-title"><div class="wrap"><div class="wk">
+  <div class="wk-side">
+    <p class="eyebrow caps"><b>01 /</b> ${e(WK.label)}</p>
+    <h2 class="wk-title" id="work-title">${e(wkTitle[0])}${wkTitle[1]?` <em>${e(wkTitle[1])}</em>`:""}</h2>
+    <p class="lede"><b>${nProj<=12?COUNT[nProj]:nProj} project${nProj===1?"":"s"}.</b>${e(WK.intro)}</p>
+    ${nProj>1?`<div class="wk-prog" aria-hidden="true"><span class="cur">01</span><span class="ln"><i></i></span><span>${String(nProj).padStart(2,"0")}</span></div>`:""}
+    <canvas class="wk-art" aria-hidden="true"></canvas>
+  </div>
+  <div class="plist">${(S.projects||[]).map(project).join("")}</div>
+</div></div></section>
 ${S.skills&&S.skills.length?`<section class="skillbar" aria-label="Skills">${skillRows(S.skills.map(k=>e(Array.isArray(k)?k[0]:k)))}</section>`:""}
-<section class="sec" id="work"><div class="wrap">
-  <div class="head"><h2>Selected work</h2><p class="lede">Systems I built, each with a demo you can watch with sound.</p></div>
-  <div class="grid">${(S.projects||[]).map(project).join("")}</div>
-</div></section>
-<section class="sec tight" id="skills"><div class="wrap">
+<section class="sec" id="skills"><div class="wrap">
   <div class="head"><h2>Capabilities</h2><p class="lede">How I work on a project.</p></div>
   <ul class="pillars">${(S.pillars||[]).map((p,i)=>`<li class="pillar"><span class="n">${String(i+1).padStart(2,"0")}</span><h3>${e(p[0])}</h3><ul class="pts">${points(p[1]).map(t=>`<li>${e(t)}</li>`).join("")}</ul></li>`).join("")}</ul>
 </div></section>
@@ -546,15 +649,18 @@ document.addEventListener("click",ev=>{
   if(c){const t=c.textContent;copyText(c.dataset.copy).then(()=>{c.textContent="Copied";say("Discord username copied");setTimeout(()=>c.textContent=t,1600)})}
 });
 
-/* Project videos. Each one plays muted, on a loop, while it is on screen; the Sound button turns the audio on (one video at a time).
+/* Project videos. Each one starts playing by itself, muted and on a loop, as soon as it is mostly on screen, and pauses when you scroll away.
+   The Sound button turns the audio on (one video at a time). The player is loaded a little before the card scrolls in,
+   so the video is already running when you get there.
    Clicking the video, or the Watch button, opens the watch view (a dialog with the full YouTube player and the project's details).
    While it is open the card videos pause. Uses YouTube's player API so we know whether it worked. If YouTube refuses the embed (for example when
    the file is opened straight from a folder instead of from a web address), the card keeps its thumbnail and the watch view offers a link to YouTube.
-   Reduced-motion visitors get no autoplay: they press "Play with sound". */
+   Reduced-motion visitors get no autoplay: they press "Play with sound".
+   Opened straight from a folder (file://), YouTube usually won't play embeds; the card then says so instead of sitting there. */
 (()=>{
   const items=[...document.querySelectorAll(".media[data-yt]")];
   if(!items.length)return;
-  const still=matchMedia("(prefers-reduced-motion:reduce)").matches;
+  const still=matchMedia("(prefers-reduced-motion:reduce)").matches,LOCAL=location.protocol==="file:";
   let loading=false,apiFailed=false,modalOpen=false;const waiting=[];
   const withApi=cb=>{
     if(window.YT&&YT.Player)return cb(true);
@@ -572,7 +678,7 @@ document.addEventListener("click",ev=>{
   const all=[];
   items.forEach(m=>{
     const btn=m.querySelector(".snd"),txt=btn.querySelector("span"),vp=m.querySelector(".vp");
-    const c={m,inView:typeof IntersectionObserver==="undefined",sound:false,go:false,ready:false,playing:false,dead:false,building:false,p:null};
+    const c={m,inView:typeof IntersectionObserver==="undefined",near:false,sound:false,go:false,ready:false,playing:false,dead:false,building:false,p:null,watch:0};
     const paint=()=>{
       if(c.dead)return;
       btn.setAttribute("aria-pressed",String(c.sound));
@@ -581,11 +687,20 @@ document.addEventListener("click",ev=>{
     const apply=()=>{                       /* make the player match what we want right now */
       if(!c.ready||c.dead)return;
       if(c.sound){c.p.unMute();c.p.setVolume(100)}else c.p.mute();
-      if(c.go)c.p.playVideo();else c.p.pauseVideo();
+      if(c.go){
+        c.p.playVideo();
+        /* still not playing a few seconds after we asked: the browser blocked it (or YouTube refused a local file) */
+        if(!c.playing&&!c.watch)c.watch=setTimeout(()=>{c.watch=0;if(c.playing||c.dead||!c.go||c.state===3)return;   /* 3 = still buffering: give it time */if(LOCAL)hint();else{btn.hidden=false;paint()}},4000);
+      }else c.p.pauseVideo();
+    };
+    const hint=()=>{
+      if(m.querySelector(".lhint"))return;
+      m.insertAdjacentHTML("beforeend",'<p class="lhint">Videos play once the site is opened from a web address (GitHub Pages, or a local server). Opened from a folder, YouTube blocks them.</p>');
     };
     const fail=()=>{
       if(c.dead)return;
       c.dead=true;
+      if(LOCAL)hint();
       if(c.p){try{c.p.destroy()}catch(_){}}
       vp.remove();btn.hidden=true;m.classList.add("failed");
     };
@@ -599,15 +714,15 @@ document.addEventListener("click",ev=>{
         c.p=new YT.Player(vp.firstElementChild,{
           host:"https://www.youtube-nocookie.com",
           videoId:id,
-          playerVars:{autoplay:1,mute:c.sound?0:1,controls:0,disablekb:1,fs:0,iv_load_policy:3,rel:0,playsinline:1,modestbranding:1,loop:1,playlist:id},
+          playerVars:{autoplay:0,mute:1,controls:0,disablekb:1,fs:0,iv_load_policy:3,rel:0,playsinline:1,modestbranding:1,loop:1,playlist:id},
           events:{
             onReady:ev=>{
               c.ready=true;
               const f=ev.target.getIframe();f.title="Demo: "+m.dataset.title;f.tabIndex=-1;
               apply();
-              setTimeout(()=>{if(!c.playing&&!c.dead){btn.hidden=false;paint()}},3500);   /* autoplay was blocked: offer a Play button */
             },
             onStateChange:ev=>{
+              c.state=ev.data;
               if(ev.data===1){c.playing=true;vp.classList.add("on");btn.hidden=false;paint()}
               else if(ev.data===2){c.playing=false;paint()}
               else if(ev.data===0){ev.target.seekTo(0);ev.target.playVideo()}
@@ -622,7 +737,7 @@ document.addEventListener("click",ev=>{
       if(!here)c.sound=false;               /* scrolling away or switching tabs always turns the sound off */
       c.go=here&&(!still||c.sound);
       if(c.dead)return;
-      if(c.go&&!c.p)build();else apply();
+      if((c.go||c.near)&&!c.p)build();else apply();
       paint();
     };
     c.set=on=>{
@@ -638,10 +753,20 @@ document.addEventListener("click",ev=>{
     const byEl=new Map(all.map(c=>[c.m,c]));
     const io=new IntersectionObserver(es=>es.forEach(en=>{
       const c=byEl.get(en.target);
-      if(en.intersectionRatio>=.4){c.inView=true;c.sync()}        /* start when mostly visible... */
+      if(en.intersectionRatio>=.35){c.inView=true;c.sync()}       /* start when mostly visible... */
       else if(en.intersectionRatio<.12){c.inView=false;c.sync()}   /* ...stop only when nearly gone, so it doesn't flicker */
-    }),{threshold:[0,.12,.4]});
+    }),{threshold:[0,.12,.35]});
     items.forEach(m=>io.observe(m));
+    /* load the player early, when the card is within about one screen of view, but only after the page itself has
+       finished loading, so YouTube's player never slows down the first paint of your site */
+    if(!still){
+      const watchNear=()=>{
+        const pre=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){const c=byEl.get(en.target);c.near=true;c.sync();pre.unobserve(en.target)}}),{rootMargin:"100% 0px 100% 0px"});
+        items.forEach(m=>pre.observe(m));
+      };
+      const later=()=>setTimeout(watchNear,1200);
+      if(document.readyState==="complete")later();else addEventListener("load",later,{once:true});
+    }
   }
   document.addEventListener("visibilitychange",()=>all.forEach(c=>c.sync()));
 
@@ -652,7 +777,7 @@ document.addEventListener("click",ev=>{
   let lbPlayer=null,run=0;
   const kill=()=>{if(lbPlayer){try{lbPlayer.destroy()}catch(_){}lbPlayer=null}};
   const openLb=m=>{
-    const id=m.dataset.yt,card=m.closest(".card"),mine=++run;
+    const id=m.dataset.yt,card=m.closest(".proj"),mine=++run;
     const watchUrl="https://www.youtube.com/watch?v="+id;
     if(typeof lb.showModal!=="function"){window.open(watchUrl,"_blank","noopener");return}   /* very old browsers: go straight to YouTube */
     const k=card.querySelector(".kind");
@@ -701,8 +826,172 @@ document.addEventListener("click",ev=>{
   ytLink.addEventListener("click",()=>{try{lbPlayer&&lbPlayer.pauseVideo()}catch(_){}});   /* opening YouTube in a new tab pauses this one */
   document.addEventListener("click",ev=>{
     const t=ev.target.closest("[data-open]");
-    const m=t&&t.closest(".card").querySelector(".media[data-yt]");
+    const m=t&&t.closest(".proj").querySelector(".media[data-yt]");
     if(m)openLb(m);
+  });
+})();
+
+/* Halftone drawing for the dotted shapes (the two in the hero, the logo in Work).
+   paint(c,S) draws a shape in black on a small hidden canvas; how dark each spot is decides the size of the red dot drawn there.
+   Every shape is drawn ONCE (and again only if its size changes); all their movement is CSS transforms, which the graphics card
+   handles, so the page does no drawing work while you look at it or scroll. The first drawing waits for an idle moment so it
+   never delays the page appearing. */
+const STILL=matchMedia("(prefers-reduced-motion:reduce)").matches;
+const idle=window.requestIdleCallback?f=>requestIdleCallback(f,{timeout:600}):f=>setTimeout(f,60);
+const halftone=(cv,paint,o={})=>{
+  if(!cv||!cv.getContext)return;
+  const ctx=cv.getContext("2d"),sh=document.createElement("canvas"),sc=sh.getContext("2d"),off=document.createElement("canvas"),oc=off.getContext("2d",{willReadFrequently:true});
+  const cs=getComputedStyle(document.documentElement),col=n=>cs.getPropertyValue(n).trim();
+  const acc=col("--accent"),hi=col("--hi"),cols=o.cols||44,glow=o.glow||.11,curve=o.curve||.5;
+  let drawn=0,timer=0;
+  const draw=()=>{
+    const S=Math.round(cv.getBoundingClientRect().width);
+    if(!S||S===drawn)return;   /* hidden, or already drawn at this size */
+    drawn=S;
+    const dpr=Math.min(devicePixelRatio||1,2),q=Math.max(1,S/cols/2.2),R=Math.ceil(S/q);
+    cv.width=cv.height=Math.round(S*dpr);sh.width=sh.height=off.width=off.height=R;
+    /* 1. the shape, then a blurred copy of it (a shadow thrown back from off-canvas) for a soft edge */
+    sc.setTransform(1/q,0,0,1/q,0,0);sc.fillStyle=sc.strokeStyle="#000";
+    paint(sc,S);
+    oc.save();oc.shadowColor="#000";oc.shadowBlur=S*glow/q;oc.shadowOffsetX=R*4;oc.drawImage(sh,-R*4,0);oc.restore();
+    oc.globalAlpha=.7;oc.drawImage(sh,0,0);
+    const px=oc.getImageData(0,0,R,R).data;
+    /* 2. dots on a grid, only where there is shape: darker spot, bigger dot. Four brightness levels, one path each. */
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const step=S/cols,buckets=[[],[],[],[]];
+    for(let y=step/2;y<S;y+=step)for(let x=step/2;x<S;x+=step){
+      const v=px[(((y/q)|0)*R+((x/q)|0))*4+3]/255;
+      if(v<.12)continue;   /* faint edge glow makes no dot: crisp outlines */
+      buckets[Math.min(3,v*4|0)].push(x,y,Math.max(.7,step*.5*Math.pow(v,curve)));
+    }
+    buckets.forEach((b,k)=>{
+      if(!b.length)return;
+      ctx.fillStyle=k===3?hi:acc;ctx.globalAlpha=.35+k*.22;ctx.beginPath();
+      for(let j=0;j<b.length;j+=3){ctx.moveTo(b[j]+b[j+2],b[j+1]);ctx.arc(b[j],b[j+1],b[j+2],0,7)}
+      ctx.fill();
+    });
+  };
+  idle(draw);
+  /* window resized: redraw once it settles, not on every step of the drag */
+  if(typeof ResizeObserver!=="undefined")new ResizeObserver(()=>{clearTimeout(timer);timer=setTimeout(()=>idle(draw),180)}).observe(cv);
+};
+
+/* Hero shapes, each drawn once, as lit 3D models in dots.
+   Left: a blocky R6-style character holding a sword up (classic tool pose, mid-step). Right: two classic studded bricks, a 2x2 stacked on a 2x4.
+   Tiny 3D renderer: boxes and cylinders, turned to a three-quarter view, faces sorted back to front, shaded by a light from the front and above,
+   with a thin gap cut along each edge so the faces read as separate planes. */
+(()=>{
+  /* a box; skip = faces to leave out (0 left side, 1 right side, 2 bottom, 3 top, 4 back, 5 front) */
+  const box=(w,h,d,skip=[])=>{
+    const v=[];for(const x of[-w/2,w/2])for(const y of[-h/2,h/2])for(const z of[-d/2,d/2])v.push([x,y,z]);
+    return {v,f:[[0,1,3,2],[4,5,7,6],[0,1,5,4],[2,3,7,6],[0,2,6,4],[1,3,7,5]].filter((_,k)=>!skip.includes(k)).map(i=>({i}))};
+  };
+  const cyl=(r,h,n)=>{
+    const v=[],f=[];
+    for(let k=0;k<n;k++){const a=k/n*Math.PI*2;v.push([Math.cos(a)*r,-h/2,Math.sin(a)*r],[Math.cos(a)*r,h/2,Math.sin(a)*r])}
+    for(let k=0;k<n;k++){const a=2*k,b=2*((k+1)%n);f.push({i:[a,b,b+1,a+1],smooth:true})}   /* round side: no gaps between its strips */
+    f.push({i:[...Array(n)].map((_,k)=>2*k+1)},{i:[...Array(n)].map((_,k)=>2*k)});
+    return {v,f};
+  };
+  /* rotate a point about the x axis (swing forward/back), then z (sideways), then move it */
+  const rx=([x,y,z],a)=>[x,y*Math.cos(a)-z*Math.sin(a),y*Math.sin(a)+z*Math.cos(a)];
+  const rz=([x,y,z],a)=>[x*Math.cos(a)-y*Math.sin(a),x*Math.sin(a)+y*Math.cos(a),z];
+  const part=(m,at,off=[0,0,0],sx=0,sz=0)=>{
+    const place=p=>{let q=[p[0]+off[0],p[1]+off[1],p[2]+off[2]];q=rz(rx(q,sx),sz);return [q[0]+at[0],q[1]+at[1],q[2]+at[2]]};
+    return {v:m.v.map(place),f:m.f,c:place([0,0,0])};
+  };
+  const render=(c,S,parts,yaw,pitch)=>{
+    const view=([x,y,z])=>{const X=x*Math.cos(yaw)+z*Math.sin(yaw),Z=-x*Math.sin(yaw)+z*Math.cos(yaw);return [X,y*Math.cos(pitch)-Z*Math.sin(pitch),y*Math.sin(pitch)+Z*Math.cos(pitch)]};
+    const L=(v=>{const m=Math.hypot(...v);return v.map(x=>x/m)})([.3,.75,.6]);   /* light from the front, above, a little to the right */
+    const faces=[];
+    parts.forEach(p=>{
+      const V=p.v.map(view),C=view(p.c);
+      p.f.forEach(f=>{
+        const fc=[0,1,2].map(a=>f.i.reduce((sum,i)=>sum+V[i][a],0)/f.i.length);
+        let n=fc.map((x,a)=>x-C[a]);const m=Math.hypot(...n)||1;n=n.map(x=>x/m);   /* face centre minus part centre = outward direction */
+        if(n[2]>.02)faces.push({pts:f.i.map(i=>V[i]),z:fc[2],lit:Math.max(0,n[0]*L[0]+n[1]*L[1]+n[2]*L[2]),smooth:f.smooth});
+      });
+    });
+    /* fit the model to the canvas */
+    let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+    faces.forEach(f=>f.pts.forEach(([x,y])=>{x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y)}));
+    const k=S*.84/Math.max(x1-x0,y1-y0),cx=S/2-(x0+x1)/2*k,cy=S/2+(y0+y1)/2*k;
+    const path=pts=>{c.beginPath();pts.forEach(([x,y],j)=>j?c.lineTo(cx+x*k,cy-y*k):c.moveTo(cx+x*k,cy-y*k));c.closePath()};
+    c.lineWidth=S*.011;c.lineJoin="round";
+    faces.sort((a,b)=>a.z-b.z).forEach(f=>{
+      c.globalCompositeOperation="source-over";c.globalAlpha=.34+.66*Math.pow(f.lit,1.1);path(f.pts);c.fill();
+      if(f.smooth)return;
+      c.globalCompositeOperation="destination-out";c.globalAlpha=1;c.stroke();
+    });
+    c.globalCompositeOperation="source-over";c.globalAlpha=1;
+  };
+
+  /* R6 sizes in studs: torso 2x2x1, arms and legs 1x2x1, round head on top. Faces the viewer (+z) before turning. */
+  const limb=box(1,2,1),SH=3.5,HAND=[0,0,1.05];
+  const swordArm=[1.5,SH,0],grip=([x,y,z])=>[swordArm[0]+x,swordArm[1]+y,swordArm[2]+z+HAND[2]];
+  halftone(document.querySelector('.hero-art[data-shape="r6"]'),(c,S)=>render(c,S,[
+    part(box(2,2,1),[0,3,0]),                                  /* torso */
+    part(cyl(.62,1.2,22),[0,4.6,0]),                           /* head */
+    part(box(1,2,1,[1]),[-.5,2,0],[0,-1,0],.26),               /* right leg, back (no inner side: the gap between the legs stays empty) */
+    part(box(1,2,1,[0]),[.5,2,0],[0,-1,0],-.26),               /* left leg, stepping forward */
+    part(limb,[-1.5,SH,0],[0,-.5,0],.3),                       /* right arm, swinging back */
+    part(limb,swordArm,[0,-.5,0],-Math.PI/2),                  /* left arm straight out, holding the sword clear of the head */
+    part(box(.22,1.3,.22),grip([0,0,0])),                      /* handle through the fist */
+    part(box(.3,.3,.3),grip([0,-.78,0])),                      /* pommel */
+    part(box(1.2,.24,.4),grip([0,.74,0])),                     /* crossguard */
+    part(box(.46,2.5,.2),grip([0,2.11,0]))                     /* blade */
+  ],.72,.14),{cols:92,glow:.012,curve:.75});
+
+  /* classic studded bricks: a 4x2 with a 2x2 stacked on its right half. Studs only where nothing covers them. */
+  const stud=cyl(.3,.22,16),BR=1.2;
+  const studs=(xs,zs,y)=>xs.flatMap(x=>zs.map(z=>part(stud,[x,y+.11,z])));
+  halftone(document.querySelector('.hero-art[data-shape="bricks"]'),(c,S)=>render(c,S,[
+    part(box(4,BR,2),[0,BR/2,0]),
+    ...studs([-1.5,-.5],[-.5,.5],BR),
+    part(box(2,BR,2),[1,BR*1.5,0]),
+    ...studs([.5,1.5],[-.5,.5],BR*2)
+  ],.62,.5),{cols:84,glow:.012,curve:.75});
+})();
+
+/* Work: light up the project you're looking at, move the 01 / 06 counter and its line, and turn the dotted logo.
+   A project counts as "current" once its top passes 60% of the way down the screen. */
+(()=>{
+  const wk=document.querySelector(".wk");
+  if(!wk)return;
+  const items=[...wk.querySelectorAll(".proj")],cur=wk.querySelector(".wk-prog .cur"),ln=wk.querySelector(".wk-prog .ln"),art=wk.querySelector(".wk-art");
+  let active=-1,frac=0,queued=false;
+  const update=()=>{
+    queued=false;
+    const line=innerHeight*.6,tops=items.map(el=>el.getBoundingClientRect().top);
+    let i=0;
+    tops.forEach((t,k)=>{if(t<line)i=k});
+    /* how far between this project and the next one, for a smooth progress line */
+    const next=tops[i+1];
+    frac=items.length>1?Math.min(1,(i+(next!==undefined?Math.max(0,Math.min(1,(line-tops[i])/(next-tops[i]))):1))/(items.length-1)):1;
+    const p=frac.toFixed(4);
+    if(ln)ln.style.setProperty("--p",p);
+    if(art)art.style.setProperty("--p",p);
+    if(i!==active){
+      if(active>=0)items[active].classList.remove("on");
+      items[i].classList.add("on");
+      active=i;
+      if(cur){cur.textContent=String(i+1).padStart(2,"0");cur.classList.remove("tick");void cur.offsetWidth;cur.classList.add("tick")}
+    }
+  };
+  const ask=()=>{if(!queued){queued=true;requestAnimationFrame(update)}};
+  wk.classList.add("live");
+  update();
+  addEventListener("scroll",ask,{passive:true});
+  addEventListener("resize",ask);
+
+  /* Dotted logo: your two slanted bars as a halftone dot grid, drawn once. It sways with a CSS animation, and scrolling
+     through the projects turns it (the update above sets --p on it; the CSS rotate property uses it). */
+  if(typeof Path2D==="undefined")return;
+  const bars=[new Path2D("M26 4h14L28 60H14z"),new Path2D("M46 4h6L40 60h-6z")];
+  halftone(art,(c,S)=>{
+    const k=S/64*.66;
+    c.transform(k,0,0,k,S/2,S/2);c.translate(-33,-32);
+    bars.forEach(b=>c.fill(b));
   });
 })();
 
