@@ -4,10 +4,13 @@
 <!--
   PUBLISH ON GITHUB PAGES
   1. On github.com create a PUBLIC repo named exactly YOURUSERNAME.github.io
-  2. Add file > Upload files > drop this index.html > Commit
+  2. Add file > Upload files > drop this index.html AND a folder called clips with your videos in it > Commit
   3. Settings > Pages > Deploy from a branch > main / (root) > Save
   4. Live at https://YOURUSERNAME.github.io in about a minute
 
+  VIDEOS: put your .mp4 files in a folder called clips next to this file, then write their names in the SITE block
+          (reel: for the showreel, src: for each clip). GitHub's upload page takes files up to 25 MB each,
+          so keep clips short (10 to 30 seconds, 720p is plenty).
   EDIT: change the SITE block in the script at the bottom, plus <title> and description below.
   COLOURS: red and black ("crimson") is the default. Set theme in the SITE block (crimson, cobalt, amber, violet, mint or rose).
            To preview one without editing anything, add ?theme=amber to the page address.
@@ -16,9 +19,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0a0708">
-<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Aayush - Roblox Scripter</title>
-<meta name="description" content="Roblox scripter for hire. Game systems, data saving and server-side checks. See my work and availability.">
+<meta name="description" content="Roblox scripter for hire. Combat, movement, abilities and UI systems, each with a demo clip. See my work and availability.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Aayush - Roblox Scripter">
 <meta property="og:description" content="Roblox scripter for hire. See my work and availability.">
@@ -29,7 +31,11 @@
 <style>
 /* ---------- Colour themes. Each one is a full set of colours; the SITE block picks one. ---------- */
 :root{
-  --bar-h:68px;   /* height of the top bar */
+  --gap:1rem;       /* space around the side panel and the top bar */
+  --bar-h:56px;     /* height of the top bar */
+  --tl-h:76px;      /* height of the systems line in Work */
+  --side-w:290px;   /* width of the side panel */
+  --r:18px;         /* corner radius of the big cards */
   --display:"Barlow Condensed",Impact,"Arial Narrow",sans-serif;
   --body:Barlow,"Helvetica Neue",Arial,system-ui,sans-serif;
   /* crimson (default): red on black */
@@ -46,231 +52,274 @@
 
 /* ---------- Base ---------- */
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;scroll-padding-top:calc(var(--bar-h) + 16px);background:var(--bg);color-scheme:dark;-webkit-text-size-adjust:100%}
-body{font:400 .9375rem/1.65 var(--body);color:var(--text);background:var(--bg);overflow-x:clip;-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--bar-h) + 2*var(--gap));background:var(--bg);color-scheme:dark;-webkit-text-size-adjust:100%}
+body{font:400 .9375rem/1.6 var(--body);color:var(--text);overflow-x:clip;-webkit-font-smoothing:antialiased}
 a{color:inherit}
-ul{list-style:none}
+ul,ol{list-style:none}
 svg{display:block;flex:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+video{display:block}
 :focus-visible{outline:2px solid var(--hi);outline-offset:3px}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .skip{position:absolute;left:-999px;top:0}
 .skip:focus{left:1rem;top:1rem;z-index:30;background:var(--accent);color:var(--on);padding:.6rem 1rem;font-weight:700}
-.wrap{width:100%;max-width:1320px;margin-inline:auto;padding-inline:clamp(1rem,4vw,2.5rem)}
 .caps{font:600 .72rem/1.2 var(--body);letter-spacing:.14em;text-transform:uppercase}
 h1,h2,h3{font-family:var(--display);font-weight:800;font-synthesis-weight:none;text-transform:uppercase;line-height:.92}
-
-/* ---------- Hover line: one effect for every text link ----------
-   A thin line draws in from the left on hover, and slides back out to the left when you move away. */
-.nav a,.lbl,.hire,.demo,.tlink,.big,.mini,footer.site a{position:relative}
-.nav a::after,.lbl::after,.hire::after,.demo::after,.tlink::after,.big::after,.mini::after,footer.site a::after{
-  content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:currentColor;
-  transform:scaleX(0);transform-origin:left;pointer-events:none;
-  transition:transform .25s ease-out}
-.nav a:hover::after,.nav a:focus-visible::after,
-.topcta:hover .lbl::after,.topcta:focus-visible .lbl::after,
-.hire:hover::after,.hire:focus-visible::after,
-.demo:hover::after,.demo:focus-visible::after,
-.tlink:hover::after,.tlink:focus-visible::after,
-.big:hover::after,.big:focus-visible::after,
-.mini:hover::after,.mini:focus-visible::after,
-footer.site a:hover::after,footer.site a:focus-visible::after{
-  transform:scaleX(1);transition-duration:.4s;transition-timing-function:cubic-bezier(.22,1,.36,1)}
-
-/* ---------- Header ---------- */
 .notice{background:var(--accent);color:var(--on);text-align:center;padding:.5rem 1rem;font-weight:600;font-size:.8rem}
-.top{position:sticky;top:0;z-index:20;background:var(--bg);
-  background:linear-gradient(90deg,transparent 56%,color-mix(in srgb,var(--accent) 22%,transparent) 94%),color-mix(in srgb,var(--bg) 88%,transparent);
-  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--line);border-bottom-color:color-mix(in srgb,var(--accent) 24%,var(--bg))}
-.bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1.5rem;height:var(--bar-h);padding-inline:clamp(1rem,3.4vw,4.25rem)}
-.brand{display:flex;align-items:stretch;gap:.9rem;min-width:0;justify-self:start;padding:.2rem 0;color:var(--text);text-decoration:none;transform:skewX(-10deg)}
-.bars{display:flex;gap:5px;flex:none;transition:gap .25s}
-.bars i{width:7px;background:var(--accent)}
-.bars i+i{width:3px;background:var(--text)}
-.brand:hover .bars,.brand:focus-visible .bars{gap:9px}
-.who{display:flex;flex-direction:column;justify-content:center;min-width:0}
-.who b,.who small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.who b{padding:.04em 0;font:900 clamp(1.4rem,1.2rem + .6vw,1.7rem)/.9 var(--display);letter-spacing:.02em;text-transform:uppercase}
-.who small{margin-top:.3rem;color:var(--mute);font:600 .8rem/1.1 var(--body)}
-.nav{display:flex;justify-self:center;gap:clamp(1.4rem,2.4vw,2.1rem)}
-.nav a{padding:.55rem 0;text-decoration:none;font:500 .875rem/1 var(--body);letter-spacing:.08em;text-transform:uppercase}
-.topcta{display:flex;align-items:center;align-self:stretch;justify-self:end;gap:1.5rem;padding-left:1.4rem;text-decoration:none;font:500 .875rem/1 var(--body);letter-spacing:.08em;text-transform:uppercase;
-  border-left:1px solid var(--line2);border-left-color:color-mix(in srgb,var(--accent) 28%,transparent)}
-.lbl{padding:.55rem 0;white-space:nowrap}
-.sq{display:grid;place-items:center;width:36px;height:36px;background:var(--accent);color:var(--on);transition:filter .2s}
-.sq svg{width:11px;height:11px}
-.topcta:hover .sq,.topcta:focus-visible .sq{filter:brightness(1.12)}
 
-/* ---------- Hero ----------
-   Fills the screen under the top bar (svh = the visible height on phones). The name sits in the middle with a line above and below it,
-   then availability and the buttons; the bottom row has the scroll link and reply time.
-   Two dotted shapes sit on the sides: a blocky R6 character on the left, studded bricks on the right. They are drawn once and moved with CSS
-   (a slow float), which the graphics card does for free, so the page stays smooth. */
-.hero{position:relative;isolation:isolate;overflow:hidden;display:grid;grid-template-rows:1fr auto;min-height:calc(100vh - var(--bar-h) - 1px);min-height:calc(100svh - var(--bar-h) - 1px);padding:clamp(1rem,2.4vh,2rem) 0 clamp(1.2rem,3vh,2rem)}
-.hero::before{content:"";position:absolute;z-index:-2;top:50%;left:50%;width:min(70rem,90vw);aspect-ratio:1.5;transform:translate(-50%,-50%);background:radial-gradient(closest-side,var(--glow),transparent);pointer-events:none}
-.waves{position:absolute;inset:0;z-index:-1;width:100%;height:100%;pointer-events:none;color:var(--line2);color:color-mix(in srgb,var(--hi) 24%,transparent);-webkit-mask-image:radial-gradient(ellipse 58% 62% at 50% 50%,transparent 30%,#000 92%);mask-image:radial-gradient(ellipse 58% 62% at 50% 50%,transparent 30%,#000 92%)}
-.waves path{vector-effect:non-scaling-stroke}
-.hero-row{display:flex;justify-content:space-between;align-items:center;gap:1rem 2rem;flex-wrap:wrap}
-.hero-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-block:clamp(1.4rem,4vh,3rem);text-align:center}
-.hero h1{display:inline-flex;flex-direction:column;font-family:var(--display);font-weight:800;text-transform:uppercase;line-height:1}
-.hero h1 .hi,.hero h1 .role{font:800 clamp(1.4rem,1rem + 1.6vw,2.6rem)/1 var(--display);font-style:italic;letter-spacing:.01em}
-.hero h1 .hi{align-self:flex-start;margin-left:-.9em;color:var(--text)}
-.hero h1 .role{align-self:flex-end;margin-right:-1.1em;color:var(--accent)}
-.hero h1 .big{margin:.04em 0 .02em;font:900 clamp(4.4rem,min(17vw,32vh),15rem)/.82 var(--display);letter-spacing:-.005em;color:var(--text)}
-.hero h1 .big i{color:var(--accent);font-style:normal}
-.hero-mid .status{margin-top:clamp(1.6rem,4.4vh,2.6rem);font-weight:600}
-.hero .actions{justify-content:center;margin-top:clamp(1rem,2.6vh,1.5rem)}
-.hero-bot{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:end}
-.explore{flex:none;justify-self:center;display:inline-flex;align-items:center;gap:.9rem;padding:.6rem 0 .7rem;border-bottom:1px solid var(--line2);color:var(--text);font:600 .78rem/1 var(--body);letter-spacing:.14em;text-transform:uppercase;text-decoration:none;transition:border-color .2s}
-.explore svg{width:12px;height:12px;color:var(--accent)}
-.explore:hover,.explore:focus-visible{border-color:var(--accent)}
-.reply{display:grid;justify-items:end;justify-self:end;gap:.35rem;text-align:right}
-.reply small{color:var(--mute);font-size:.68rem}
-.reply span{font-size:.9rem;font-weight:600}
-.hero-art{position:absolute;z-index:-1;aspect-ratio:1;pointer-events:none;will-change:transform}
-.hero-art.l{left:clamp(-2rem,-1vw,0rem);top:15%;width:clamp(13rem,24vw,26rem)}
-.hero-art.r{right:clamp(-1rem,-.5vw,0rem);top:22%;width:clamp(12rem,21vw,23rem)}
-.actions{display:flex;align-items:center;gap:1rem 2.2rem;flex-wrap:wrap;margin-top:clamp(1.5rem,3vw,2.2rem)}
-.status{display:flex;align-items:center;gap:.7rem;margin-top:1.5rem;color:var(--text)}
-.dot{width:.5rem;height:.5rem;flex:none;border-radius:50%;background:var(--accent);box-shadow:0 0 0 .24rem color-mix(in srgb,var(--accent) 28%,transparent)}
+/* One card look for every panel on the page: dark surface, thin border, round corners, a faint tint of the accent at the top. */
+.card{background:var(--surface);background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 5%,var(--surface)),var(--surface) 9rem);border:1px solid var(--line);border-radius:var(--r)}
+
+/* Hover line for the small text links: draws in from the left, slides back out when you leave. */
+.tlink,footer.site a{position:relative}
+.tlink::after,footer.site a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;pointer-events:none;transition:transform .25s ease-out}
+.tlink:hover::after,.tlink:focus-visible::after,footer.site a:hover::after,footer.site a:focus-visible::after{transform:scaleX(1);transition-duration:.4s;transition-timing-function:cubic-bezier(.22,1,.36,1)}
+
+/* ---------- Page frame: side panel on the left, everything else on the right, full width ---------- */
+.shell{display:grid;grid-template-columns:var(--side-w) minmax(0,1fr);gap:var(--gap);width:100%;max-width:2000px;margin-inline:auto;padding-inline:var(--gap)}   /* full width, but stops growing past 2000px so huge monitors don't stretch everything */
+.main{min-width:0;padding-bottom:2rem}
+
+/* ---------- Side panel, like Sufi's: who you are and three facts at the top, then the menu (it scrolls on its own
+   if it gets taller than the screen), then a small note at the bottom. The panel stays put while the page scrolls. ---------- */
+.side{position:sticky;top:var(--gap);align-self:start;display:flex;flex-direction:column;height:calc(100vh - 2*var(--gap));height:calc(100dvh - 2*var(--gap));margin-top:var(--gap);overflow:hidden}
+.side-top{display:grid;gap:1.1rem;padding:1.2rem 1.2rem 1.1rem;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:.9rem;min-width:0;color:var(--text);text-decoration:none}
+.logo{display:grid;place-items:center;flex:none;width:58px;height:58px;overflow:hidden;border-radius:16px;background:var(--bg);border:1px solid var(--line2);transition:border-color .2s}
+.logo svg{width:28px;height:28px}
+.logo img{width:100%;height:100%;object-fit:cover}
+.brand:hover .logo,.brand:focus-visible .logo{border-color:var(--accent)}
+.who{display:flex;flex-direction:column;min-width:0}
+.who b{padding:.04em 0;overflow:hidden;font:900 1.65rem/.95 var(--display);letter-spacing:.02em;text-transform:uppercase;text-overflow:ellipsis;white-space:nowrap}
+.who small{margin-top:.3rem;color:var(--mute);font:500 .82rem/1.35 var(--body)}
+.facts,.kv{display:grid;gap:.45rem}
+.facts div,.kv div{display:flex;align-items:center;justify-content:space-between;gap:.5rem .9rem;min-height:2.6rem;padding:.45rem .8rem;border:1px solid var(--line);border-radius:11px;background:rgba(0,0,0,.22)}
+.facts dt,.kv dt{flex:none;color:var(--mute);font-size:.82rem}
+.facts dd,.kv dd{display:flex;align-items:center;gap:.5rem;min-width:0;margin-left:auto;font-weight:600;font-size:.84rem;text-align:right}
+.dot{width:.5rem;height:.5rem;flex:none;border-radius:50%;background:var(--accent);box-shadow:0 0 0 .22rem color-mix(in srgb,var(--accent) 28%,transparent)}
 .off .dot{background:var(--mute);box-shadow:none}
+.snav{flex:1;min-height:0;overflow:auto;padding:.9rem 1.2rem;scrollbar-width:thin;scrollbar-color:var(--line2) transparent}
+.snav ul{display:grid;gap:.3rem}
+.snav a,.snav button{position:relative;display:flex;align-items:center;gap:.8rem;width:100%;padding:.68rem .8rem;border:1px solid transparent;border-radius:12px;color:var(--mute);font-weight:500;font-size:.92rem;text-align:left;text-decoration:none;transition:color .2s,background .2s,border-color .2s}
+.snav svg{width:18px;height:18px}
+.snav span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.snav small{flex:none;display:grid;place-items:center;min-width:2rem;height:1.6rem;padding:0 .45rem;border:1px solid var(--line);border-radius:99px;font:600 .7rem/1 var(--body)}
+.snav small svg{width:10px;height:10px}
+.snav a:hover,.snav button:hover{color:var(--text);background:rgba(255,255,255,.035)}
+.snav [aria-current]{color:var(--text);background:color-mix(in srgb,var(--accent) 10%,transparent);border-color:color-mix(in srgb,var(--accent) 40%,transparent)}
+.snav [aria-current]::before{content:"";position:absolute;left:-.73rem;top:24%;bottom:24%;width:3px;border-radius:3px;background:var(--accent)}
+.snav [aria-current] svg{color:var(--hi)}
+.snav [aria-pressed=true] small{border-color:color-mix(in srgb,var(--accent) 55%,transparent);color:var(--hi)}
+/* Work in the side menu: one item ("Systems") with the number of systems. While you're in the Work section it opens
+   into a list of your systems with a line down the left: the red part grows as you scroll, passed systems get a filled dot,
+   the one you're on glows. Outside Work it folds shut again. */
+.snav .chev{width:12px;height:12px;color:var(--mute);transition:transform .3s}
+.wgrp.open .chev{transform:rotate(180deg)}
+.subwrap{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s cubic-bezier(.22,1,.36,1)}
+.wgrp.open .subwrap{grid-template-rows:1fr}
+.subwrap>div{min-height:0;overflow:hidden}
+.snav .sub{--ih:2.35rem;--x:calc(.8rem + 9px);position:relative;gap:0;padding:.35rem 0 .3rem;visibility:hidden;transition:visibility 0s .4s}
+.wgrp.open .sub{visibility:visible;transition-delay:0s}
+.sub::before,.sub::after{content:"";position:absolute;left:calc(var(--x) - 1px);top:calc(.35rem + var(--ih)/2);width:2px;border-radius:2px}
+.sub::before{bottom:calc(.3rem + var(--ih)/2);background:var(--line2)}
+.sub::after{height:calc((100% - .65rem - var(--ih))*var(--wp,0));background:linear-gradient(var(--accent),var(--hi));box-shadow:0 0 10px var(--glow)}
+.snav .sub a{gap:.85rem;height:var(--ih);padding:0 .6rem 0 calc(var(--x) - 5px);border:0;border-radius:9px;font-size:.86rem}
+.snav .sub a:hover{background:rgba(255,255,255,.03)}
+.snav .sub a[aria-current]{background:none;color:var(--text);font-weight:600}
+.snav .sub a[aria-current]::before{display:none}
+.sdot{position:relative;z-index:1;flex:none;width:10px;height:10px;border:2px solid var(--line2);border-radius:50%;background:var(--surface);transition:background .25s,border-color .25s,box-shadow .25s}
+.sub .done .sdot{background:var(--accent);border-color:var(--accent)}
+.sub .cur .sdot{background:var(--hi);border-color:var(--hi);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 28%,transparent),0 0 14px var(--glow)}
+.grp{padding:1rem .8rem .35rem;color:var(--mute);font:700 .68rem/1.2 var(--body);letter-spacing:.16em;text-transform:uppercase;opacity:.8}
+.snav hr{margin:.7rem .2rem;border:0;border-top:1px solid var(--line)}
+.side-foot{padding:1rem 1.2rem 1.1rem;border-top:1px solid var(--line);color:var(--mute);font-size:.76rem;line-height:1.5}
 
-/* ---------- Buttons and links ---------- */
-.btn{display:inline-flex;align-items:center;gap:2.2rem;padding:1.15rem 1.5rem;border-radius:6px;background:var(--accent);color:var(--on);font:700 .875rem/1 var(--body);letter-spacing:.09em;text-transform:uppercase;text-decoration:none;box-shadow:0 10px 36px -14px var(--glow);transition:transform .15s,filter .15s,box-shadow .15s}
-.btn:hover{filter:brightness(1.1);transform:translateY(-2px);box-shadow:0 14px 34px -12px var(--accent)}
+/* ---------- Top bar: where you are on the page and the two main buttons. Sticks to the top. ---------- */
+.top{position:sticky;top:0;z-index:20;padding-top:var(--gap)}
+.top::before{content:"";position:absolute;inset:0 0 auto;height:calc(var(--gap) + var(--bar-h)/2);z-index:-1;background:linear-gradient(var(--bg) 60%,transparent);opacity:0;transition:opacity .25s;pointer-events:none}
+.scrolled .top::before{opacity:1}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:1rem;height:var(--bar-h);padding:0 .55rem 0 1.1rem;border:1px solid var(--line);border-radius:14px;background:var(--surface);background:color-mix(in srgb,var(--surface) 80%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.crumb{display:flex;align-items:center;min-width:0;color:var(--mute);font-size:.85rem}
+.path{display:flex;gap:.6rem;min-width:0;white-space:nowrap}
+.path i{font-style:normal;opacity:.5}
+.path b{overflow:hidden;color:var(--text);font-weight:600;text-overflow:ellipsis}
+.mbrand{display:none;align-items:center;gap:.6rem;color:var(--text);text-decoration:none}
+.mbrand svg{width:20px;height:20px}
+.mbrand b{font:900 1.35rem/1 var(--display);letter-spacing:.02em;text-transform:uppercase}
+.tbtns{display:flex;gap:.5rem}
+.tb{display:inline-flex;align-items:center;gap:.55rem;height:2.4rem;padding:0 .95rem;border:1px solid var(--line2);border-radius:10px;font-weight:600;font-size:.85rem;white-space:nowrap;text-decoration:none;transition:border-color .2s,filter .2s}
+.tb svg{width:10px;height:10px}
+.tb:hover,.tb:focus-visible{border-color:var(--accent)}
+.tb.go{background:var(--accent);border-color:var(--accent);color:var(--on)}
+.tb.go:hover{filter:brightness(1.12)}
+
+/* ---------- Opening, all centred: an "Open for commissions" pill, "Hi, I'm ...", one line, two buttons,
+   then the showreel under them with a small "Showreel" heading. ---------- */
+.hero{position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;align-items:center;margin-top:var(--gap);padding:clamp(1.3rem,4vh,2.6rem) clamp(1rem,2.6vw,2.2rem) clamp(1rem,2.2vw,1.8rem);text-align:center}
+.hero::before{content:"";position:absolute;z-index:-1;left:50%;top:-12%;width:80%;aspect-ratio:2;transform:translateX(-50%);background:radial-gradient(closest-side,var(--glow),transparent);opacity:.65;pointer-events:none}
+/* the thin red curved lines behind the opening (drawn once by waves() in the script); they fade out behind your name */
+.waves{position:absolute;inset:0;z-index:-1;width:100%;height:100%;pointer-events:none;opacity:.55;-webkit-mask-image:radial-gradient(ellipse 46% 34% at 50% 30%,transparent 30%,#000 100%);mask-image:radial-gradient(ellipse 46% 34% at 50% 30%,transparent 30%,#000 100%)}
+.waves path{fill:none;stroke:var(--accent);stroke-width:1;vector-effect:non-scaling-stroke}
+.open-pill{display:inline-flex;align-items:center;gap:.6rem;padding:.45rem .95rem;border:1px solid var(--line2);border-radius:99px;background:rgba(0,0,0,.25);color:var(--text);font-weight:600;font-size:.86rem}
+.reel-wrap{width:min(100%,840px);margin-top:clamp(1.6rem,4vh,2.6rem)}   /* as wide as the panel, up to 840px */
+.reel-head{display:flex;flex-direction:column;align-items:center;gap:.45rem;margin-bottom:1rem}
+.reel-head h2{display:flex;align-items:center;gap:.8rem;margin:0;font:900 clamp(2.4rem,3.8vw,3.8rem)/.9 var(--display);letter-spacing:.01em}
+.reel-head .pi{display:grid;place-items:center;flex:none;width:.78em;height:.78em;border-radius:50%;background:var(--accent);color:var(--on);box-shadow:0 8px 26px -8px var(--glow)}
+.reel-head .pi svg{width:.24em;height:.28em;margin-left:.04em}
+.reel-head p{color:var(--hi);font:700 .76rem/1.2 var(--body);letter-spacing:.18em;text-transform:uppercase}
+.reel{border-radius:16px;box-shadow:0 30px 90px -40px var(--glow)}
+.reel-cap{margin-top:.7rem;color:var(--mute);font-size:.85rem;line-height:1.4}
+.reel-cap i{font-style:normal;opacity:.5}
+.reel-cap b{color:var(--hi);font-weight:600}
+.reel-cap a{display:inline-flex;align-items:center;gap:.35rem;color:var(--text);font-weight:600;text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:4px}
+.reel-cap a svg{width:10px;height:10px;color:var(--hi)}
+.reel-cap a:hover{color:var(--hi)}
+.hello{margin-top:clamp(1rem,2.4vh,1.4rem);font:900 clamp(2.9rem,4.8vw,5.8rem)/.9 var(--display);letter-spacing:-.003em;text-wrap:balance}
+.hello em{padding-right:.04em;color:var(--accent);background:linear-gradient(90deg,var(--accent),var(--hi));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}   /* starred words: a red gradient */
+.hero-intro{max-width:66ch;margin-top:clamp(.7rem,1.8vh,1rem);color:var(--mute);font-size:1.05rem;line-height:1.55}
+.actions{display:flex;align-items:center;justify-content:center;gap:.7rem 1rem;flex-wrap:wrap;margin-top:clamp(1rem,2.2vh,1.4rem)}
+.status{display:flex;align-items:center;gap:.7rem;color:var(--text)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gap);margin-top:var(--gap)}
+.stat{padding:1.15rem 1.3rem}
+.stat b{display:block;font:900 clamp(2.2rem,3vw,3rem)/.95 var(--display);text-transform:uppercase}
+.stat span{display:block;margin-top:.45rem;color:var(--mute);font-size:.85rem;line-height:1.4}
+
+/* "Scroll to see my work": a dark fade fixed to the bottom of the screen, over the page, with a bobbing arrow.
+   Only there while you're at the very top; it fades away as soon as you scroll. Click it to jump to Work. */
+.cue{position:fixed;z-index:15;left:max(calc(2*var(--gap) + var(--side-w)),calc(50vw - 1000px + 2*var(--gap) + var(--side-w)));right:max(var(--gap),calc(50vw - 1000px + var(--gap)));bottom:0;display:flex;align-items:flex-end;justify-content:center;height:9.5rem;padding-bottom:1.1rem;background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--bg) 82%,transparent) 55%,var(--bg));pointer-events:none;transition:opacity .35s,transform .35s}
+.cue.gone{opacity:0;transform:translateY(1rem);visibility:hidden;transition:opacity .35s,transform .35s,visibility 0s .35s}
+.cue a{display:flex;flex-direction:column;align-items:center;gap:.6rem;color:var(--text);font:700 .74rem/1 var(--body);letter-spacing:.18em;text-transform:uppercase;text-decoration:none;pointer-events:auto}
+.cue-ar{display:grid;place-items:center;width:2.7rem;height:2.7rem;border:1px solid color-mix(in srgb,var(--accent) 60%,transparent);border-radius:50%;background:color-mix(in srgb,var(--accent) 14%,var(--bg));color:var(--hi);box-shadow:0 10px 30px -10px var(--glow);transition:background .2s,color .2s}
+.cue-ar svg{width:13px;height:13px}
+.cue a:hover .cue-ar,.cue a:focus-visible .cue-ar{background:var(--accent);color:var(--on)}
+@media(prefers-reduced-motion:no-preference){.cue-ar{animation:bob 1.6s ease-in-out infinite}@keyframes bob{50%{transform:translateY(6px)}}}
+
+/* ---------- Buttons, small links, chips ---------- */
+.btn{display:inline-flex;align-items:center;gap:1.4rem;padding:1rem 1.3rem;border:1px solid var(--accent);border-radius:12px;background:var(--accent);color:var(--on);font:700 .82rem/1 var(--body);letter-spacing:.09em;text-transform:uppercase;text-decoration:none;box-shadow:0 10px 36px -14px var(--glow);transition:transform .15s,filter .15s,border-color .15s}
+.btn svg{width:12px;height:12px}
+.btn:hover{filter:brightness(1.1);transform:translateY(-2px)}
 .btn:active{transform:translateY(1px)}
-.hire{display:inline-flex;align-items:center;gap:.6rem;padding:.6rem 0;color:var(--text);font:600 .875rem/1 var(--body);letter-spacing:.09em;text-transform:uppercase;text-decoration:none}
-.hire svg{width:9px;height:9px;color:var(--accent)}
-.tlink{display:inline-flex;align-items:center;gap:.55rem;padding:.55rem 0;font:700 .78rem/1.2 var(--body);letter-spacing:.14em;text-transform:uppercase;text-decoration:none}
+.btn.ghost{background:none;border-color:var(--line2);color:var(--text);box-shadow:none}
+.btn.ghost svg{color:var(--accent)}
+.btn.ghost:hover{border-color:var(--accent);filter:none}
+.tlink{display:inline-flex;align-items:center;gap:.55rem;padding:.45rem 0;font:700 .74rem/1.2 var(--body);letter-spacing:.14em;text-transform:uppercase;text-decoration:none}
 .tlink svg{width:11px;height:11px;color:var(--hi)}
+.tags{display:flex;flex-wrap:wrap;gap:.4rem}
+.tags li{padding:.24rem .7rem;border:1px solid var(--line2);border-radius:.9rem;font-size:.78rem;line-height:1.5}
 
-/* ---------- Skills strip (between Work and Capabilities): names only, as small boxes styled like the contact card.
-   Two rows drift in opposite directions and fade out at both ends. With reduced motion they sit still and wrap. ---------- */
-.skillbar{padding:clamp(1.3rem,3vw,2rem) 0;border-top:2px solid var(--accent);border-bottom:1px solid var(--line)}
-.mq{max-width:1320px;margin-inline:auto;padding-inline:clamp(1rem,4vw,2.5rem)}
-.mq+.mq{margin-top:.75rem}
-.track{display:flex;flex-wrap:wrap;gap:.75rem}
-.track li{flex:none;display:flex;align-items:center;min-width:clamp(9.5rem,13vw,12.5rem);min-height:4.2rem;padding:.9rem 1.2rem;background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 7%,var(--surface)),var(--surface));border:1px solid var(--line);border-top:2px solid var(--accent);font:900 clamp(1.05rem,1.35vw,1.3rem)/1.05 var(--display);text-transform:uppercase;white-space:nowrap}
-.track li[aria-hidden]{display:none}
-@media(prefers-reduced-motion:no-preference){
-  /* Each track holds two identical groups, so sliding it by half its width loops with no jump. */
-  .mq{max-width:none;padding-inline:0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
-  .track{flex-wrap:nowrap;gap:0;width:max-content;animation:drift var(--dur,80s) linear infinite;will-change:transform}
-  .track li{margin-right:.75rem}
-  .track li[aria-hidden]{display:flex}
-  .mq.rev .track{animation-direction:reverse}
-  @keyframes drift{to{transform:translateX(-50%)}}
-}
-
-/* ---------- Sections ---------- */
-.sec{padding:clamp(2.6rem,6vw,4.5rem) 0}
-.sec.tight{padding-top:0}
-.head{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem 3rem;flex-wrap:wrap;margin-bottom:clamp(1.6rem,3.5vw,2.6rem)}
-h2{font-size:clamp(1.8rem,2.4vw + .7rem,2.5rem);line-height:.92}
-.lede{color:var(--mute);max-width:46ch}
+/* ---------- Sections: small red label, big heading, at most one short line under it ---------- */
+.sec{margin-top:clamp(3rem,7vw,4.6rem)}
+.shead{margin-bottom:1.3rem}
+.eyebrow{color:var(--hi);font:700 .7rem/1.2 var(--body);letter-spacing:.16em;text-transform:uppercase}
+h2{margin-top:.55rem;font-size:clamp(2.2rem,2.2vw + 1.3rem,3.2rem)}
+h2 em{color:var(--accent);font-style:italic}
+.lede{max-width:56ch;margin-top:.6rem;color:var(--mute)}
+.lede b{color:var(--text);font-weight:600}
 
 /* ---------- Work ----------
-   Left: a column that stays pinned while you scroll (label, big heading, count, progress line, dotted logo).
-   Right: one large card per project. The card you're looking at is lit; the others are dimmed until you reach them. */
-#work{border-top:2px solid var(--accent)}
-.wk{display:grid;grid-template-columns:minmax(0,.74fr) minmax(0,1.26fr);gap:clamp(2rem,5vw,5.5rem);align-items:start}
-.wk-side{position:sticky;top:calc(var(--bar-h) + clamp(1.4rem,5vh,3.2rem))}
-.eyebrow{color:var(--mute)}
-.eyebrow b{color:var(--hi);font-weight:600}
-.wk-title{margin-top:clamp(1.1rem,3vh,1.8rem);font:800 clamp(3rem,4.6vw,5.2rem)/.86 var(--display);letter-spacing:-.005em}
-.wk-title em{display:block;color:var(--accent);font-style:italic}
-.wk-side .lede{margin-top:clamp(1.1rem,3vh,1.8rem);font-size:1.05rem;line-height:1.55}
-.wk-side .lede b{display:block;color:var(--text);font-weight:600}
-.wk-prog{display:flex;align-items:center;gap:1rem;margin-top:clamp(1.5rem,4vh,2.6rem);color:var(--mute);font:600 .8rem/1 var(--body);letter-spacing:.14em;font-variant-numeric:tabular-nums}
-.wk-prog .cur{display:inline-block;min-width:2ch;color:var(--text)}
-.wk-prog .ln{position:relative;width:clamp(6rem,10vw,9rem);height:1px;overflow:hidden;background:var(--line2)}
-.wk-prog .ln i{position:absolute;inset:0;background:var(--accent);transform-origin:left;transform:scaleX(var(--p,0))}
-.wk-art{display:block;width:min(15rem,27vh);aspect-ratio:1;margin:clamp(.8rem,3vh,2rem) 0 0 -.6rem}
-.plist{display:grid;gap:clamp(4rem,11vh,7.5rem)}
-.proj{min-width:0;transition:opacity .55s ease}
-.wk.live .proj{opacity:.32}
-.wk.live .proj.on,.wk.live .proj:focus-within{opacity:1}
-.wk.live .proj:not(.on):hover{opacity:.65}
-.media{position:relative;display:block;width:100%;aspect-ratio:16/9;overflow:hidden;background:#000 center/cover no-repeat;border:1px solid var(--line);border-radius:6px;text-align:left;transition:border-color .2s,box-shadow .2s}
-.media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.7));pointer-events:none}
-.media:focus-visible{outline-offset:-4px}
-.media.vid:hover{border-color:var(--accent);box-shadow:0 30px 70px -40px var(--glow)}
-.chip{position:absolute;right:.9rem;bottom:.9rem;display:inline-flex;align-items:center;gap:.6rem;padding:.62rem .85rem;background:rgba(10,7,8,.78);background:color-mix(in srgb,var(--bg) 80%,transparent);border:1px solid var(--line2);color:var(--text);font:700 .72rem/1 var(--body);letter-spacing:.14em;text-transform:uppercase;transition:background .2s,border-color .2s,color .2s}
-.chip svg{width:10px;height:10px;color:var(--hi)}
-.zoom:hover .chip,.zoom:focus-visible .chip{background:var(--accent);border-color:var(--accent);color:var(--on)}
-.zoom:hover .chip svg,.zoom:focus-visible .chip svg{color:currentColor}
-.pbody{display:grid;grid-template-columns:2.6rem minmax(0,1fr) auto;gap:.85rem .5rem;padding-top:clamp(1.2rem,2.4vw,1.8rem)}
-.pnum{padding-top:.15rem;color:var(--mute);font:600 .75rem/1 var(--body);letter-spacing:.14em}
-.ptitle .kind{margin-bottom:.5rem}
-.ptitle h3{font-size:clamp(1.75rem,2.5vw,2.5rem);line-height:.94;overflow-wrap:anywhere}
-.parrow{display:grid;place-items:center;width:2.75rem;height:2.75rem;border:1px solid var(--line2);border-radius:50%;color:var(--text);text-decoration:none;transition:background .2s,border-color .2s,color .2s}
-.parrow svg{width:12px;height:12px;transition:transform .25s cubic-bezier(.22,1,.36,1)}
-.parrow:hover,.parrow:focus-visible{background:var(--accent);border-color:var(--accent);color:var(--on)}
-.parrow:hover svg,.parrow:focus-visible svg{transform:translate(2px,-2px)}
-.pbody>.blurb,.pbody>.tags,.pbody>.cardfoot{grid-column:2/-1}
-.pbody>.blurb{max-width:60ch;font-size:.95rem}
-.pbody>.cardfoot{margin:0;padding:0}
-.pill{position:absolute;z-index:1;left:.9rem;bottom:.9rem;display:inline-flex;align-items:center;gap:.7rem;padding:.65rem .9rem;background:var(--accent);color:var(--on);font:700 .72rem/1 var(--body);letter-spacing:.14em;text-transform:uppercase;transition:filter .15s}
-.snd:hover{filter:brightness(1.12)}
-.snd[aria-pressed=true]{background:rgba(10,7,8,.74);color:var(--text);box-shadow:inset 0 0 0 1px var(--accent)}
-.snd svg{width:16px;height:14px}
-.snd[aria-pressed=false] .ic-on,.snd[aria-pressed=true] .ic-off{display:none}
-.vid [hidden]{display:none}
-.vp{position:absolute;inset:0;opacity:.01;transition:opacity .5s}   /* not 0: some browsers refuse to autoplay a fully transparent video */
-.vp.on{opacity:1}
-.zoom{position:absolute;inset:0;z-index:1;display:grid;place-items:center;cursor:pointer;transition:background .2s}   /* click anywhere on the video to open the watch view; the Sound button sits above it */
-.zoom:focus-visible{outline-offset:-4px}
-.badge{display:grid;place-items:center;width:3.7rem;height:3.7rem;border-radius:50%;background:var(--accent);color:var(--on);box-shadow:0 10px 30px -8px var(--glow);opacity:0;transform:scale(.82);transition:opacity .2s,transform .25s cubic-bezier(.22,1,.36,1)}
-.badge svg{width:17px;height:19px;margin-left:3px}
-.zoom:hover,.zoom:focus-visible{background:rgba(10,7,8,.3)}
-.zoom:hover .badge,.zoom:focus-visible .badge,.media.failed .badge{opacity:1;transform:none}   /* failed = YouTube refused the embed: thumbnail only, so the badge stays visible */
-.media.empty::after{display:none}
-.lhint{position:absolute;z-index:2;left:.9rem;right:.9rem;top:.9rem;padding:.6rem .8rem;background:rgba(10,7,8,.85);border-left:2px solid var(--accent);color:var(--text);font:600 .78rem/1.45 var(--body);pointer-events:none}
-.media iframe{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none}
-.media.empty{display:grid;place-items:center;cursor:default;background:repeating-linear-gradient(135deg,var(--surface) 0 18px,color-mix(in srgb,var(--accent) 8%,var(--surface)) 18px 36px)}
-.media.empty .msg{max-width:30ch;padding:1rem;text-align:center;color:var(--mute);font:600 .74rem/1.5 var(--body);letter-spacing:.14em;text-transform:uppercase}
-.kind{color:var(--mute);font:700 .7rem/1.2 var(--body);letter-spacing:.16em;text-transform:uppercase}
-.blurb{color:var(--mute);font-size:.9rem}
-.tags{display:flex;flex-wrap:wrap;gap:.45rem}
-.tags li{padding:.28rem .65rem;border:1px solid var(--line2);border-radius:4px;font-size:.78rem}
-.cardfoot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem 1.4rem;width:100%;margin-top:auto;padding-top:1.1rem}
-.demo{display:inline-flex;align-items:center;gap:.8rem;padding:.6rem 0;font:800 .78rem/1 var(--body);letter-spacing:.18em;text-transform:uppercase;text-decoration:none}
-.demo svg{color:var(--accent)}
-.demo.off{color:var(--mute)}
-.demo.off svg{color:var(--line2)}
+   The systems line sticks right under the top bar while you're in this section: one circle per system, its name, and its clip count.
+   The line between two circles fills as you scroll through a system; circles you've passed stay filled and the current one glows.
+   Under it, one section per system (like Sufi's work page): heading, a big "main demo" card with the clip on the left and the
+   text on the right, then the system's other clips as a row of cards. Click any clip to watch it big with sound. */
+.tlband{position:sticky;top:calc(var(--gap) + var(--bar-h));z-index:10;container-type:inline-size;background:var(--bg);border-block:1px solid var(--line)}
+.tl{display:flex;align-items:center;max-width:1180px;height:var(--tl-h);margin-inline:auto;padding-inline:clamp(.75rem,2vw,2rem)}
+.tl li{display:flex;align-items:center;min-width:0}
+.tl li:not(:last-child){flex:1 1 auto}
+.tl li:not(:last-child)::after{content:"";flex:1;min-width:1.2rem;height:2px;margin-inline:clamp(.8rem,2vw,1.6rem);border-radius:2px;background:linear-gradient(90deg,var(--accent) calc(var(--p,0)*100%),var(--line2) 0)}
+.tl a{display:flex;align-items:center;gap:.9rem;min-width:0;padding:.4rem 0;text-decoration:none}
+.node{flex:none;width:22px;height:22px;border:2px solid color-mix(in srgb,var(--accent) 60%,transparent);border-radius:50%;transition:background .25s,border-color .25s,box-shadow .25s}
+.tl .done .node{background:color-mix(in srgb,var(--accent) 70%,var(--bg));border-color:transparent}
+.tl .cur .node{background:var(--hi);border-color:var(--hi);box-shadow:0 0 0 6px color-mix(in srgb,var(--accent) 26%,transparent),0 0 24px var(--glow)}
+.txt{display:grid;min-width:0}
+.tl b{max-width:15rem;overflow:hidden;color:var(--mute);font:700 1.05rem/1.25 var(--body);text-overflow:ellipsis;white-space:nowrap;transition:color .25s}
+.tl small{color:var(--mute);font-size:.8rem;line-height:1.3;opacity:.7}
+.tl a:hover b,.tl .cur b{color:var(--text)}
+.tl .cur small{color:var(--hi);opacity:1}
+.tl.many li:not(.cur) .txt{display:none}   /* more than five systems: only the current one keeps its name, the others are just circles */
+@container (max-width:900px){.tl li:not(.cur) .txt{display:none}}   /* row too narrow for every name (tablets, small laptops, phones): same thing */
+@container (max-width:420px){.tl li:not(:last-child)::after{min-width:.6rem;margin-inline:.5rem}.tl b{font-size:.95rem}.tl a{gap:.6rem}}   /* small phones: tighter, so the current name fits */
 
-/* ---------- Watch view (opens when a project video or its Watch link is clicked) ----------
-   A native <dialog>: Esc closes it, focus stays inside it, and focus returns to the card when it closes.
-   Video on the left, the project's details on the right (stacked on small screens). The close button is a tab on the top edge. */
+.sys{padding-top:clamp(1.8rem,3.4vw,2.6rem);scroll-margin-top:var(--tl-h)}
+.sys+.sys{margin-top:clamp(1.6rem,3.4vw,2.6rem);border-top:1px solid var(--line)}
+.sys-head{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem 2rem;flex-wrap:wrap;margin-bottom:1.2rem}
+.sys-head>div{display:flex;align-items:center;gap:1.1rem;min-width:0}
+.sys-ic{display:grid;place-items:center;flex:none;width:58px;height:58px;border-radius:16px;background:var(--accent);color:var(--on);font:900 1.5rem/1 var(--display);box-shadow:0 14px 34px -12px var(--glow)}
+.sys-ic svg{width:28px;height:28px}
+.sys-head h3{margin-top:.3rem;font-size:clamp(2rem,2.8vw,2.8rem);line-height:.94;overflow-wrap:anywhere}
+.sys-head .blurb{max-width:60ch;margin-top:.4rem}
+.blurb{color:var(--mute);font-size:.94rem}
+.count{flex:none;padding:.32rem .85rem;border:1px solid color-mix(in srgb,var(--accent) 50%,transparent);border-radius:99px;color:var(--hi);font:600 .8rem/1.2 var(--body)}
+/* main demo card */
+.feat{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,1fr);overflow:hidden;transition:border-color .35s,box-shadow .35s}
+.sys.on .feat{border-color:color-mix(in srgb,var(--accent) 35%,var(--line));box-shadow:0 34px 90px -60px var(--glow)}
+.feat .media{border:0;border-right:1px solid var(--line);border-radius:0}
+.feat-body{display:flex;flex-direction:column;align-items:flex-start;gap:.8rem;padding:clamp(1.2rem,2.6vw,2.2rem)}
+.feat-body h4{font:900 clamp(2rem,2.6vw,2.8rem)/.92 var(--display);text-transform:uppercase}
+.feat-body .blurb{max-width:42ch}
+.feat-body .tlink{margin-top:auto}
+/* the other clips */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--gap);margin-top:var(--gap)}   /* the other clips: two to a row */
+.tile{display:flex;flex-direction:column;overflow:hidden}
+.tile .media{border:0;border-bottom:1px solid var(--line);border-radius:0}
+.tile-body{display:flex;flex-direction:column;align-items:flex-start;flex:1;gap:.35rem;padding:1rem 1.15rem 1.05rem}
+.tile-body h4{font:700 1.12rem/1.25 var(--body)}
+.tile-body .tlink{margin-top:auto;padding-top:.6rem}
+
+/* one clip box (used for the reel, the main demos and the tiles) */
+.media{position:relative;display:block;width:100%;aspect-ratio:16/9;overflow:hidden;background:#000;border:1px solid var(--line);border-radius:14px;text-align:left}
+.media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.2),transparent 30%,transparent 65%,rgba(0,0,0,.5));pointer-events:none}
+.lab{position:absolute;z-index:2;left:.8rem;top:.8rem;padding:.38rem .65rem;border:1px solid color-mix(in srgb,var(--accent) 55%,transparent);border-radius:7px;background:rgba(10,7,8,.72);color:var(--text);font:700 .62rem/1 var(--body);letter-spacing:.14em;text-transform:uppercase;pointer-events:none}
+.zoom{position:absolute;inset:0;z-index:1;display:grid;place-items:center;cursor:pointer;transition:background .2s}
+.zoom:focus-visible{outline-offset:-4px}
+.zoom:hover,.zoom:focus-visible{background:rgba(10,7,8,.28)}
+/* play button: an outlined circle, red on hover; hidden while the clip is playing unless you hover it */
+.badge{display:grid;place-items:center;width:4rem;height:4rem;border:1px solid rgba(255,255,255,.3);border-radius:50%;background:rgba(10,7,8,.5);color:#fff;transition:background .2s,border-color .2s,opacity .25s,transform .25s cubic-bezier(.22,1,.36,1)}
+.badge svg{width:16px;height:18px;margin-left:3px}
+.zoom:hover .badge,.zoom:focus-visible .badge{background:var(--accent);border-color:var(--accent);color:var(--on);transform:scale(1.06)}
+.media.on .zoom:not(:hover):not(:focus-visible) .badge{opacity:0}
+.reel .badge{width:4.6rem;height:4.6rem}
+.reel .badge svg{width:18px;height:20px}
+.sndtag{position:absolute;z-index:2;right:.8rem;bottom:.8rem;display:inline-flex;align-items:center;gap:.55rem;padding:.5rem .75rem;border-radius:9px;background:rgba(10,7,8,.72);color:var(--text);font:700 .64rem/1 var(--body);letter-spacing:.14em;text-transform:uppercase;pointer-events:none}
+.sndtag svg{width:15px;height:13px;color:var(--hi)}
+.reel:not(.sound) .ic-on,.reel.sound .ic-off{display:none}
+.media .msg{position:absolute;inset:0;z-index:2;display:grid;place-items:center;padding:1rem;background:#0c0809;color:var(--mute);font:600 .7rem/1.5 var(--body);letter-spacing:.14em;text-align:center;text-transform:uppercase}
+.media .msg code{display:block;margin-top:.3rem;font:500 .74rem/1.4 ui-monospace,Consolas,monospace;letter-spacing:0;text-transform:none;color:var(--text)}
+.media.missing .zoom,.media.empty .zoom{display:none}
+.media.empty::after,.media.missing::after{display:none}
+.feat:has(.missing) .feat-body .tlink,.tile:has(.missing) .tlink{display:none}   /* no "Watch" link for a clip whose file is missing */
+
+/* ---------- Ask band at the end of Work ---------- */
+.ask{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem 2rem;margin-top:clamp(2rem,4vw,3rem);padding:clamp(1.2rem,2.6vw,1.8rem) clamp(1.2rem,2.6vw,2rem)}
+.ask h3{font-size:clamp(1.7rem,2.2vw,2.2rem)}
+.ask p{margin-top:.35rem;color:var(--mute);font-size:.92rem}
+.ask .actions{margin-top:0}
+
+/* ---------- Watch view (opens when a clip is clicked) ----------
+   A native <dialog>: Esc closes it, focus stays inside it, and focus returns to the clip when it closes.
+   Video with sound and controls on the left, the clip's details on the right (stacked on small screens). */
 html.lb-open{overflow:hidden;scrollbar-gutter:stable}
-.lb{--side:clamp(17rem,27vw,21rem);--pad:clamp(.75rem,3vw,2.5rem);position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:calc(var(--pad) + 44px) var(--pad) var(--pad);border:0;background:transparent;color:var(--text);overflow:auto}
-.lb[open]{display:flex}   /* not on .lb alone: that would override the closed state */
-.lb::backdrop{background:rgba(5,4,5,.88);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}   /* fixed colour: ::backdrop can't always read the theme variables */
-.lb-box{position:relative;width:min(100%,1240px);margin:auto;background:var(--surface);border:1px solid var(--line2);border-top:2px solid var(--accent);box-shadow:0 40px 120px -36px var(--glow)}
-.lb-x{position:absolute;right:-1px;bottom:100%;display:grid;place-items:center;width:44px;height:44px;background:var(--accent);color:var(--on);transition:filter .15s}
+.lb{--lbside:clamp(17rem,27vw,21rem);--pad:clamp(.75rem,3vw,2.5rem);position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:calc(var(--pad) + 52px) var(--pad) var(--pad);border:0;background:transparent;color:var(--text);overflow:auto}
+.lb[open]{display:flex}
+.lb::backdrop{background:rgba(5,4,5,.88);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.lb-box{position:relative;width:min(100%,1240px);margin:auto}
+.lb-in{overflow:hidden;background:var(--surface);border:1px solid var(--line2);border-radius:var(--r);box-shadow:0 40px 120px -36px var(--glow)}
+.lb-x{position:absolute;right:0;bottom:calc(100% + .6rem);display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--accent);color:var(--on);transition:filter .15s}
 .lb-x:hover{filter:brightness(1.12)}
-.lb-x:focus-visible{outline-offset:2px}
-.lb-x svg{width:14px;height:14px}
-.lb-stage{position:relative;aspect-ratio:16/9;background:#000 center/cover no-repeat}
-.lb-stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-.lb-msg{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:1.1rem;padding:1.5rem;text-align:center;background:rgba(10,7,8,.8)}
-.lb-msg p{max-width:30ch;font:600 1rem/1.4 var(--body)}
-.lb-info{display:flex;flex-direction:column;align-items:flex-start;gap:1rem;padding:clamp(1.2rem,2.4vw,1.8rem);border-top:1px solid var(--line)}
+.lb-x svg{width:13px;height:13px}
+.lb-stage{position:relative;aspect-ratio:16/9;background:#000}
+.lb-stage video{position:absolute;inset:0;width:100%;height:100%;background:#000}
+.lb-msg{position:absolute;inset:0;display:grid;place-content:center;gap:.4rem;padding:1.5rem;text-align:center;color:var(--mute)}
+.lb-msg b{color:var(--text);font-size:1rem}
+.lb-info{display:flex;flex-direction:column;align-items:flex-start;gap:.9rem;padding:clamp(1.2rem,2.4vw,1.7rem);border-top:1px solid var(--line)}
 .lb-info h3{font-size:clamp(1.9rem,2.7vw,2.5rem);line-height:.94;overflow-wrap:anywhere}
-.lb-info .blurb{font-size:.95rem}
 @media(min-width:861px){
-  .lb-box{display:grid;grid-template-columns:minmax(0,1fr) var(--side);width:min(100%,1240px,calc((100dvh - 9rem)*16/9 + var(--side)))}   /* keeps the video fully on screen on short windows */
+  .lb-box{width:min(100%,1240px,calc((100dvh - 9rem)*16/9 + var(--lbside)))}   /* keeps the video fully on screen on short windows */
+  .lb-in{display:grid;grid-template-columns:minmax(0,1fr) var(--lbside)}
   .lb-info{border-top:0;border-left:1px solid var(--line)}
 }
-@media(prefers-reduced-motion:no-preference){
-  .lb[open]::backdrop{animation:lb-fade .22s ease-out}
-  .lb[open] .lb-box{animation:lb-in .32s cubic-bezier(.2,.7,.2,1)}
-  @keyframes lb-fade{from{opacity:0}}
-  @keyframes lb-in{from{opacity:0;transform:translateY(16px) scale(.985)}}
-}
 
-/* ---------- Capabilities ---------- */
+
+/* ---------- Capabilities: number, title and bullet points under a red line ---------- */
 .pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:clamp(1.3rem,2.6vw,2.2rem)}
 .pillar{padding-top:1rem;border-top:2px solid var(--accent)}
 .pillar .n{display:block;color:var(--hi);font:600 .75rem/1 var(--body);letter-spacing:.14em}
@@ -280,84 +329,63 @@ html.lb-open{overflow:hidden;scrollbar-gutter:stable}
 .pts li::before{content:"";position:absolute;left:0;top:.55em;width:5px;height:5px;background:var(--accent);transform:skewX(-10deg)}
 
 /* ---------- Rates (hidden unless showRates is true in the SITE block) ---------- */
-.tw{overflow-x:auto;border:1px solid var(--line);background:var(--surface)}
+.tw{overflow-x:auto}
 table{width:100%;border-collapse:collapse}
 th{padding:.9rem 1.2rem;border-bottom:1px solid var(--line2);color:var(--mute);font-size:.68rem;text-align:left}
-td{padding:1.05rem 1.2rem;border-top:1px solid var(--line)}
+td{padding:1rem 1.2rem;border-top:1px solid var(--line)}
 tbody tr:first-child td{border-top:0}
 td.price{font:800 1.5rem/1 var(--display);color:var(--hi);white-space:nowrap}
-.terms{max-width:68ch;margin-top:1.2rem;padding-left:1rem;border-left:2px solid var(--accent);color:var(--mute);font-size:.9rem}
+.terms{max-width:68ch;margin-top:1rem;color:var(--mute);font-size:.9rem}
 
-/* ---------- Reviews ---------- */
-.quotes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:1.3rem}
-blockquote{padding:1.3rem;background:var(--surface);border:1px solid var(--line);border-top:2px solid var(--accent)}
-blockquote::before{content:"\201C";display:block;height:1.8rem;color:var(--accent);font:900 3.6rem/1 var(--display)}
-blockquote p{font:500 1.05rem/1.5 var(--body)}
-blockquote footer{margin-top:.9rem;color:var(--mute);font-weight:600;font-size:.85rem}
+/* ---------- Reviews (hidden unless showReviews is true) ---------- */
+.quotes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:.9rem}
+blockquote{padding:1.2rem}
+blockquote p{font:500 1rem/1.5 var(--body)}
+blockquote footer{margin-top:.8rem;color:var(--mute);font-weight:600;font-size:.85rem}
 blockquote footer a{text-decoration-color:var(--accent);text-underline-offset:4px}
 
-/* ---------- Contact ---------- */
-.cta{position:relative;isolation:isolate;overflow:hidden;padding:clamp(2.8rem,6.5vw,5rem) 0 clamp(2.8rem,6.5vw,4.6rem);border-top:1px solid var(--line)}
-.cta::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(115deg,transparent 56%,var(--line) 56%,var(--line) calc(56% + 2px),transparent calc(56% + 2px)),linear-gradient(90deg,transparent 76%,color-mix(in srgb,var(--accent) 8%,transparent) 76%)}
-.cgrid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(2rem,5vw,4rem);align-items:start}
-.cleft h2{margin-bottom:clamp(1rem,2.2vw,1.5rem)}
-.cleft .lede{font-size:1rem;color:var(--text)}
-.cleft .btn{margin-top:clamp(1.4rem,3vw,2rem)}
-.cleft .status{margin-top:1.5rem;font-weight:600}
-.cleft .hrs{margin-top:.5rem;color:var(--mute);font-size:.875rem}
-.ccard{padding:clamp(1.3rem,3vw,2rem);background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 7%,var(--surface)),var(--surface));border:1px solid var(--line);border-top:2px solid var(--accent)}
-.ccard h3{font-size:clamp(1.6rem,2.4vw,2.1rem);overflow-wrap:anywhere}
-.crole{margin-top:.4rem;font-weight:600;font-size:.9rem}
-.rows{display:grid;grid-template-columns:1fr 1fr;gap:1.3rem 2rem;margin-top:1.4rem;padding-top:1.4rem;border-top:1px solid var(--line)}
-.rows .full{grid-column:1/-1}
-.rows dt{color:var(--mute);font-size:.68rem}
-.rows dd{margin-top:.3rem;font-size:.95rem;overflow-wrap:anywhere}
-.big{display:inline-flex;align-items:center;gap:.5rem;padding:.2rem 0;font:600 clamp(1rem,1.7vw,1.25rem)/1.3 var(--body);text-decoration:none;overflow-wrap:anywhere}
-.big svg{width:12px;height:12px;color:var(--hi)}
-.acts{display:flex;flex-wrap:wrap;gap:.2rem 1.2rem;margin-top:.45rem}
-.mini{display:inline-flex;align-items:center;gap:.35rem;padding:.2rem 0;color:var(--hi);font:700 .72rem/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;text-decoration:none}
-.mini svg{width:10px;height:10px}
+/* ---------- Contact: how and when to reach you on the left; what to send and the terms on the right ---------- */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:.9rem}
+.cc{display:flex;flex-direction:column;align-items:flex-start;padding:clamp(1.1rem,2.4vw,1.5rem)}
+.cc h3{margin-bottom:.8rem;font-size:1.5rem;line-height:1}
+.cc .kv{width:100%}
+.kv+h3{margin-top:1.5rem}
+.kv dd{overflow-wrap:anywhere}
+.kv a{text-decoration:none}
+.kv a:hover{color:var(--hi)}
+.copy{flex:none;padding:.22rem .6rem;border:1px solid var(--line2);border-radius:8px;color:var(--mute);font:600 .72rem/1.3 var(--body);transition:color .2s,border-color .2s}
+.copy:hover,.copy:focus-visible{border-color:var(--accent);color:var(--text)}
+.cc .btn{margin-top:1.2rem}
+.cc .status{margin-top:auto;padding-top:1.2rem}
 
 /* ---------- Footer ---------- */
-footer.site{padding:1.4rem 0 2.2rem;border-top:1px solid var(--line);color:var(--mute);font-size:.85rem}
-footer.site .wrap{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+footer.site{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.6rem 1rem;margin-top:clamp(2.6rem,6vw,3.6rem);padding:1.2rem .2rem 0;border-top:1px solid var(--line);color:var(--mute);font-size:.82rem}
 footer.site a{display:inline-flex;align-items:center;gap:.5rem;padding:.3rem 0;text-decoration:none}
 footer.site a:hover{color:var(--text)}
+footer.site svg{width:12px;height:12px}
 
 /* ---------- Smaller screens ---------- */
-@media(max-width:1100px){
-  .hero-art{opacity:.55}
-  .hero-art.l{left:-8vw}
-  .hero-art.r{right:-8vw}
+@media(max-width:1300px){
+  :root{--side-w:260px}
+  .feat{grid-template-columns:minmax(0,1.3fr) minmax(260px,1fr)}
 }
-@media(max-width:760px){
-  .hero-art{display:none}
-  .hero h1 .big{font-size:clamp(4.4rem,23vw,7.5rem)}
-  .hero h1 .hi{margin-left:0}
-  .hero h1 .role{margin-right:0}
-  .hero-bot{grid-template-columns:1fr;justify-items:center;gap:1.2rem}
-  .hero-bot>span:empty{display:none}
-  .reply{justify-items:center;justify-self:center;text-align:center}
-}
-@media(max-height:720px){
-  .wk-art{display:none}   /* short windows: keep the pinned column from running off the bottom */
-}
-@media(max-width:980px){
-  .wk{grid-template-columns:1fr;gap:2.4rem}
-  .wk-side{position:static}
-  .wk-title{font-size:clamp(2.8rem,11vw,4.4rem)}
-  .wk-prog,.wk-art{display:none}
-  .plist{gap:3.6rem}
-}
-@media(max-width:860px){
-  .bar{grid-template-columns:1fr auto}
-  .nav{display:none}
-  .cgrid{grid-template-columns:1fr}
+@media(max-width:1000px){
+  /* no side panel: the top bar shows your name instead, and the page is one column */
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .side,.path{display:none}
+  .mbrand{display:flex}
+  .cue{left:0;right:0}
+  .feat{grid-template-columns:minmax(0,1fr)}
+  .feat .media{border-right:0;border-bottom:1px solid var(--line)}
 }
 @media(max-width:700px){
-  .pbody{grid-template-columns:2rem minmax(0,1fr) auto}
-  .chip{display:none}
-  .rows{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  :root{--tl-h:62px}
+  .tl li:not(:last-child)::after{margin-inline:.7rem}
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .sys-ic{width:48px;height:48px;border-radius:13px}
+  .sys-ic svg{width:24px;height:24px}
+  .badge{width:3.4rem;height:3.4rem}
   thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
   tr{display:block;padding:1rem 1.2rem;border-top:1px solid var(--line)}
   tbody tr:first-child{border-top:0}
@@ -366,9 +394,18 @@ footer.site a:hover{color:var(--text)}
   td.price{font-size:1.4rem}
 }
 @media(max-width:520px){
-  :root{--bar-h:60px}
-  .topcta{padding-left:0;border-left:0}
-  .lbl{display:none}
+  .cue{height:6.4rem;padding-bottom:.7rem;background:linear-gradient(180deg,transparent,var(--bg) 28%)}   /* solid sooner on phones so it never sits on top of other text */
+  .kv dd{font-size:.8rem}
+  .copy{padding:.2rem .5rem}
+  .cue a{gap:.45rem;font-size:.66rem}
+  .cue-ar{width:2.2rem;height:2.2rem}
+  .kv div{flex-wrap:wrap;row-gap:.15rem}
+  .kv dt{flex-basis:100%}
+  .kv dd{margin-left:0;text-align:left;flex:1}
+  .sys-head h3{font-size:1.9rem}
+  .tb.wk{display:none}
+  .tb{padding:0 .75rem}
+  .btn{gap:1rem;padding:.95rem 1.1rem}
 }
 
 /* ---------- Among Us crewmate that follows the mouse. Resize it with --crew. ---------- */
@@ -378,27 +415,16 @@ footer.site a:hover{color:var(--text)}
 @keyframes crew-spin{to{transform:rotate(-360deg)}}
 @media(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce),print{.crew{display:none}}
 
-/* ---------- One entrance on load. The only other things that move on their own are the skills rows and the dotted logo in Work. ---------- */
+/* ---------- One entrance on load ---------- */
 @media(prefers-reduced-motion:no-preference){
-  .wk-prog .ln i{transition:transform .35s cubic-bezier(.22,1,.36,1)}
-  .wk-art{rotate:calc(var(--p,0) * 90deg);animation:sway 8s ease-in-out infinite;will-change:transform}
-  @keyframes sway{0%,100%{transform:rotate(-8deg) scaleX(.92)}50%{transform:rotate(8deg) scaleX(1)}}
-  .wk-prog .cur.tick{animation:tick .45s cubic-bezier(.2,.7,.2,1)}
-  @keyframes tick{from{opacity:0;transform:translateY(.5em)}}
-  .hero h1>*,.hero-mid>:not(h1){animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
-  .hero h1 .big{animation-delay:.08s}
-  .hero h1 .role{animation-delay:.16s}
-  .hero-mid>.status{animation-delay:.24s}
-  .hero-mid>.actions{animation-delay:.32s}
-  .hero-row{animation:fade 1.1s .35s ease-out both}
-  .hero-art.l{animation:fade 1.1s .35s ease-out both,float 7s ease-in-out infinite}
-  .hero-art.r{animation:fade 1.1s .35s ease-out both,float2 9s ease-in-out infinite}
-  @keyframes float{50%{transform:translateY(-14px) rotate(-2deg)}}
-  @keyframes float2{50%{transform:translateY(-12px) rotate(3deg)}}
-  .explore svg{animation:bob 1.8s ease-in-out infinite}
+  .hero>:not(.waves){animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
+  .hero>.hello{animation-delay:.08s}
+  .hero>.hero-intro{animation-delay:.12s}
+  .hero>.actions{animation-delay:.18s}
+  .hero>.reel-wrap{animation-delay:.26s}
+  .stats{animation:fade 1s .3s ease-out both}
   @keyframes fade{from{opacity:0}}
-  @keyframes bob{50%{transform:translateY(3px)}}
-  @keyframes rise{from{opacity:0;transform:translateY(.4em)}}
+  @keyframes rise{from{opacity:0;transform:translateY(.5em)}}
 }
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
@@ -423,21 +449,32 @@ footer.site a:hover{color:var(--text)}
 <rect x="13" y="24" width="44" height="28" rx="14" fill="url(#cm-v)" stroke="#0c0b08" stroke-width="5"/>
 <rect x="21" y="29" width="15" height="6" rx="3" fill="#f0f6f5"/>
 </svg></div>
-<noscript><p class="wrap" style="padding-top:2rem">This portfolio needs JavaScript. Email me instead.</p></noscript>
+<noscript><p style="padding:2rem">This portfolio needs JavaScript. Email me instead.</p></noscript>
 <script>
 /* ===== Everything on the page comes from here. ===== */
 const SITE = {
   theme: "crimson",   // crimson (red and black), cobalt, amber, violet, mint or rose. Preview one by adding ?theme=amber to the page address.
   name: "Aayush",
   role: "Roblox Scripter",
-  intro: "I am a Roblox Scripter building complete features, from server logic and saving to the UI players touch.",   // not shown on the page right now (the hero keeps just your name). Kept here in case you want it back.
-  tagline: "Game systems, data saving and server-side checks. Send me the scope and I’ll reply with a price and timeline.",   // not shown on the page right now either
+  roles: "Gameplay · Systems · UI",   // the small line under your name in the side panel, after your role
+  avatar: "",   // optional: a picture for the square in the side panel, e.g. "clips/avatar.png". Left empty, it shows the logo.
+  reel: {   // your showreel, under the opening text. Plays on its own with no sound; clicking it turns sound on.
+    src: "clips/reel.mp4", poster: "",
+    label: "Showreel",                                   // the big heading above it
+    title: "Just the highlights",                        // the small red line under the heading
+    line: "A quick cut to grab your attention. Every system gets its own clips in the Work section below."   // the line under it
+  },
+  headline: "Hi, I’m a *Roblox Scripter*",   // the big line on the opening. Words between *stars* turn red.
+  intro: "Building complete features, from server logic and saving to the UI players touch.",   // the line under it. Keep it to one sentence.
+  stats: [   // number tiles under the opening panel. Empty = hidden. Only add numbers that prove something, e.g.
+    // ["3","games I've scripted for"], ["1.2M","visits on games I worked on"], ["12","commissions delivered"]
+  ],
   years: "1 Year",
   available: true,
   hours: "16 hours a Day, UTC+5:30",
   reply: "Within 24 hours",
   payment: "PayPal or Robux through a group payout",
-  pillars: [   // a title and its points; each point becomes a bullet. A comma-separated string also works.
+  pillars: [   // Capabilities: a title and its points; each point becomes a bullet. A comma-separated string also works.
     ["Gameplay",["Combat Systems","Movement Systems","Weapons","Abilities","Bosses & AI","NPCs"]],
     ["Backend",["State Machines","Networking Modules","Leaderboard System","Cross-server Systems","Server Validations"]],
     ["User Interface",["UI Design","UI Programming","Dialogue Systems","Viewports","Animations","Advanced Tweening","Menus","HUDs"]],
@@ -447,20 +484,44 @@ const SITE = {
     ["DataStore",["DataStore2","ProfileService","DataStore saving","DataStore security","DataStore optimization"]],
     ["Debugging",["Debugging","Testing","Optimizing","Performance Tuning"]]
   ],
-  work: {   // the pinned column beside your projects. title: first line, then the line in red italics. intro: the line under the project count.
+  work: {   // the heading above your systems. title: first part in white, second part in red italics. intro: the short line under it, after the count.
     label: "Selected work",
     title: ["Systems", "That i Made."],
-    intro: "Each one with a demo you can watch with sound."
+    intro: "Click any clip to watch it with sound.",
+    nav: "Work"   // the name of the Work item in the side panel
   },
-  skills: ["Modular Luau","DataStore","Movement Systems","Progression Systems","Combat Systems","User Interface","Debugging","Anti-Cheat Systems","Frameworks","OOPs Luau"],   // the drifting strip between Work and Capabilities: names only. Ten fits best (two even rows of five).
+  ask: { title:"Need a system like these?", line:"Combat, movement, abilities or UI. Send me the scope and I’ll reply with a price and timeline." },   // the band at the end of Work
   projects: [
-    // label: short line above the title. yt: paste the YouTube link (or the 11-character video ID). The video plays on its own with no sound and visitors can turn sound on; clicking the video, or the Watch button under it, opens it in a larger watch view. link: your Roblox game page (optional, adds a Play on Roblox button). A YouTube link pasted into link: also works as the video.
-    { label:"Combat", title:"Combat System", blurb:"A advanced combat system made using custom OOP based approach.", tags:["Attacking", "Blocking", "Parry", "GuardBreaks", "Stamina"], yt:"https://youtu.be/kLNc2tjuyNo", link:"" },
-    { label:"Movement", title:"Movement System", blurb:"A advanced movement system made using custom OOP based approach and Custom State Machines, Animation Systems.", tags:["Movement", "Dash", "Jump", "Sprint", "Physics"], yt:"https://youtu.be/EKuUF-7XCbk", link:"" },
-    { label:"Abilities", title:"Custom Ability", blurb:"A custom ability system Built from scratch on top of my Custom State Machine, Animation Systems.", tags:["Abilities","Combat","Transformation","VFX"], yt:"https://youtu.be/fkUaa9YoElM", link:"" },
-    { label:"UI", title:"UI Scripting", blurb:"UI scripting for a modern and responsive interface,Advanced UI Tweening.", tags:["UI","Tweening","Animations"], yt:"https://youtu.be/fwDrcLbXF1k", link:"" },
- ],
-  showRates: false,   // Rates are hidden for now. Set to true to bring back the "Rates and terms" section and its menu link.
+    // One entry = one section in Work, one circle on the systems line, and one item under Work in the side panel.
+    // title: the system's name. blurb: ONE short line under it. tags: the chips on its main demo card.
+    // clips: its videos. The FIRST one is the big main demo card; the rest sit under it, two to a row.
+    //   src:    the video file in your clips folder, e.g. "clips/combat-1.mp4" (MP4, H.264, ideally under 25 MB)
+    //   title:  its name.  line: one short line about it.
+    //   poster: optional picture shown before it loads, e.g. "clips/combat-1.jpg". Left out, the first frame is used.
+    //   tag:    optional small label on the video, e.g. "Parry". Left out, the main demo says "Main demo" and the rest show the system's label.
+    // A clip whose file isn't uploaded yet shows "Clip not found" with the file name, so you can see what's missing.
+    // icon (optional): sword, move, spark, ui, data, shield or code. Left out, it is picked from the label/title.
+    { label:"Combat", title:"Combat System", blurb:"Advanced combat built on a custom OOP approach.", tags:["Attacking", "Blocking", "Parry", "GuardBreaks", "Stamina"],
+      clips:[
+        { title:"Combat demo", line:"Attacking, blocking, parry, guard breaks and stamina.", src:"clips/combat-1.mp4" },
+        // { title:"Parry", line:"Perfect-timing parry that staggers the attacker.", src:"clips/combat-2.mp4" },
+        // { title:"Guard break", line:"Heavy hits break a held block.", src:"clips/combat-3.mp4" },
+      ] },
+    { label:"Movement", title:"Movement System", blurb:"Advanced movement on custom state machines and animation systems.", tags:["Movement", "Dash", "Jump", "Sprint", "Physics"],
+      clips:[
+        { title:"Movement demo", line:"Dash, jump and sprint with physics.", src:"clips/movement-1.mp4" },
+      ] },
+    { label:"Abilities", title:"Custom Ability", blurb:"Built from scratch on my custom state machine and animation systems.", tags:["Abilities","Combat","Transformation","VFX"],
+      clips:[
+        { title:"Ability demo", line:"A transformation ability with its own VFX.", src:"clips/ability-1.mp4" },
+      ] },
+    { label:"UI", title:"UI Scripting", blurb:"Modern, responsive interfaces with advanced UI tweening.", tags:["UI","Tweening","Animations"],
+      clips:[
+        { title:"UI demo", line:"Responsive menus with advanced tweening.", src:"clips/ui-1.mp4" },
+      ] },
+  ],
+  brief: ["The system you need","Your game genre","Your deadline","Your budget"],   // Contact: the "Before you message" list
+  showRates: true,   // Set to false to hide the "Rates and terms" section and its menu link.
   rates: [
     ["Single feature (shop, rewards, pets)","$60 to $200","2 to 7 days"],
     ["Full system (combat, quests, progression)","$200 to $500","1 to 3 weeks"],
@@ -468,7 +529,7 @@ const SITE = {
     ["Ongoing work","$15 per hour","Invoiced weekly"]
   ],
   terms: "Half upfront, half on delivery. Larger projects are paid by milestone. Scope and price are agreed in writing before I start.",
-  showReviews: false,   // Client reviews are hidden for now. Set to true once you have real quotes in the list below.
+  showReviews: false,   // Off until you have a real client quote: a placeholder review hurts trust more than no reviews. Paste the quote below, then set this to true.
   reviews: [ { quote:"Paste a real quote from a client here.", who:"Client name, game name", link:"" } ],
   contact: { discord:"urekmazino1827", discordId:"", email:"kmaraayush7876@gmail.com", devforum:"", roblox:"" },   // discordId is optional: your numeric Discord user ID adds an "Open Discord" link
   updated: "Nov 2026"
@@ -478,519 +539,396 @@ const SITE = {
 const S=SITE,C=S.contact||{};
 const e=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const url=s=>{s=String(s||"").trim();return /^(https?:|mailto:)/i.test(s)?s:"https://"+s};
-const vid=s=>{s=String(s||"").trim();const m=s.match(/(?:v=|youtu\.be\/|embed\/|shorts\/|live\/)([\w-]{11})/);return m?m[1]:/^[\w-]{11}$/.test(s)?s:""};
+const num=i=>String(i+1).padStart(2,"0");
 const svg=(w,h,d,extra)=>`<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true" ${extra||'fill="none" stroke="currentColor" stroke-width="2"'}>${d}</svg>`;
+/* small arrows and player icons */
 const I={
   up:svg(14,14,'<path d="M3 11 11 3M4.5 3H11v6.5"/>'),
   down:svg(14,14,'<path d="M7 2v10M2.5 7.5 7 12l4.5-4.5"/>'),
   top:svg(14,14,'<path d="M7 12V2M2.5 6.5 7 2l4.5 4.5"/>'),
+  right:svg(14,14,'<path d="M2 7h10M7.5 2.5 12 7l-4.5 4.5"/>'),
   close:svg(14,14,'<path d="M2 2l10 10M12 2 2 12" stroke-linecap="round"/>'),
   play:svg(12,14,'<path d="M0 0l12 7-12 7z"/>','fill="currentColor"'),
   mute:svg(16,14,'<path d="M1 5h3l4-3.5v11L4 9H1z" fill="currentColor" stroke="none"/><path d="m11 5 4 4m0-4-4 4" stroke-width="1.6" stroke-linecap="round"/>').replace("<svg ",'<svg class="ic-off" '),
   vol:svg(16,14,'<path d="M1 5h3l4-3.5v11L4 9H1z" fill="currentColor" stroke="none"/><path d="M10.5 4.8a3.2 3.2 0 0 1 0 4.4M12.6 3a5.6 5.6 0 0 1 0 8" stroke-width="1.5" stroke-linecap="round"/>').replace("<svg ",'<svg class="ic-on" ')
 };
+/* line icons: the first seven are for systems (icon: in a project), the rest for the side menu */
+const ic=d=>svg(24,24,d,'fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"');
+const IC={
+  sword:ic('<path d="M4 4h3l9.5 9.5-3 3L4 7z"/><path d="m11.5 18.5 7-7M16 16l4 4"/>'),
+  move:ic('<path d="m4 6 6 6-6 6M13 6l6 6-6 6"/>'),
+  spark:ic('<path d="m12 3 2.2 6.8L21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2z"/>'),
+  ui:ic('<rect x="3" y="4.5" width="18" height="15" rx="2.5"/><path d="M3 9.5h18M7.5 14.5h5"/>'),
+  data:ic('<ellipse cx="12" cy="6" rx="7.5" ry="3"/><path d="M4.5 6v12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/>'),
+  shield:ic('<path d="m12 3 7.5 3v5.5c0 4.6-3.1 8.2-7.5 9.5-4.4-1.3-7.5-4.9-7.5-9.5V6z"/>'),
+  code:ic('<path d="m8.5 7-5 5 5 5M15.5 7l5 5-5 5"/>'),
+  home:ic('<path d="m4 11 8-7 8 7v8.5H14.5v-6h-5v6H4z"/>'),
+  bolt:ic('<path d="M13 3 5 13.5h6L10 21l8-10.5h-6z"/>'),
+  tag:ic('<path d="M4 4h7l9 9-7 7-9-9z"/><path d="M8 8h.01"/>'),
+  chat:ic('<path d="M4 5h16v11H9l-5 4z"/>'),
+  mail:ic('<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7.5 8 5.5 8-5.5"/>'),
+  film:ic('<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M10 9.5v5l4.5-2.5z"/>'),
+  hire:ic('<path d="M5 19 19 5M8 5h11v11"/>')
+};
+const LOGO=`<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M26 4h14L28 60H14z" fill="var(--accent)"/><path d="M46 4h6L40 60h-6z" fill="var(--text)"/></svg>`;
 
 /* theme: the SITE value, or ?theme=name in the address for a quick preview */
 const THEMES=["crimson","cobalt","amber","violet","mint","rose"];
 const asked=new URLSearchParams(location.search).get("theme");
 const theme=THEMES.includes(asked)?asked:THEMES.includes(S.theme)?S.theme:THEMES[0];
 document.documentElement.dataset.theme=theme;
+document.documentElement.classList.toggle("off",!S.available);   /* fully booked: the availability dots go grey */
 
 const placeholder=S.name==="Your Name";
 const status=S.available?"Currently available for work":"Fully booked right now";
+const points=v=>Array.isArray(v)?v:String(v||"").split(",").map(x=>x.trim()).filter(Boolean);
+const tags=list=>list&&list.length?`<ul class="tags">${list.map(t=>`<li>${e(t)}</li>`).join("")}</ul>`:"";
 
-const project=(p,i)=>{
-  /* the video can be pasted into yt: or into link: (a YouTube address there is treated as the video) */
-  const id=vid(p.yt)||vid(p.link),n=String(i+1).padStart(2,"0");
-  if(!id&&p.yt)console.warn(`Project ${i+1} (${p.title}): couldn't read this YouTube link:`,p.yt);
-  const roblox=p.link&&!vid(p.link)?url(p.link):"";
-  const media=id
-    ?`<div class="media vid" data-yt="${id}" data-title="${e(p.title)}" style="background-image:url(https://i.ytimg.com/vi/${id}/maxresdefault.jpg),url(https://i.ytimg.com/vi/${id}/hqdefault.jpg)"><button class="zoom" type="button" data-open aria-label="Watch ${e(p.title)}"><span class="badge" aria-hidden="true">${I.play}</span><span class="chip" aria-hidden="true"><span>Watch project</span>${I.up}</span></button><div class="vp"><div></div></div><button class="pill snd" type="button" aria-pressed="false" aria-label="Sound for ${e(p.title)}" hidden>${I.mute}${I.vol}<span>Sound off</span></button></div>`
-    :`<div class="media empty"><p class="msg">${placeholder?"Add a YouTube link in the SITE block to show your demo here":"Demo video coming soon"}</p></div>`;
-  /* the round arrow beside the title: opens the watch view, or the Roblox game if there's no video */
-  const arrow=id
-    ?`<button class="parrow" type="button" data-open aria-label="Watch ${e(p.title)}">${I.up}</button>`
-    :roblox?`<a class="parrow" href="${e(roblox)}" target="_blank" rel="noopener" aria-label="Play ${e(p.title)} on Roblox">${I.up}</a>`:"<span></span>";
-  const play=roblox&&id?`<div class="cardfoot"><a class="tlink" href="${e(roblox)}" target="_blank" rel="noopener">Play on Roblox ${I.up}</a></div>`:"";
-  return `<article class="proj">${media}<div class="pbody"><span class="pnum" aria-hidden="true">${n}</span><div class="ptitle">${p.label?`<p class="kind">${e(p.label)}</p>`:""}<h3>${e(p.title)}</h3></div>${arrow}<p class="blurb">${e(p.blurb)}</p><ul class="tags">${(p.tags||[]).map(t=>`<li>${e(t)}</li>`).join("")}</ul>${play}</div></article>`;
+/* which icon a system gets when it has no icon: of its own */
+const guess=p=>{
+  const t=`${p.label||""} ${p.title||""}`.toLowerCase();
+  return /combat|weapon|sword|fight/.test(t)?"sword":/mov|dash|sprint|parkour/.test(t)?"move":/abilit|power|vfx|skill/.test(t)?"spark":/\bui\b|menu|hud|interface/.test(t)?"ui":/data|sav|stor/.test(t)?"data":/anti|cheat|secur/.test(t)?"shield":"";
 };
+const P=S.projects||[],nProj=P.length;
+const clipsOf=p=>(p.clips||[]).filter(c=>c&&(c.src||c.title));   /* empty entries are skipped */
+/* one video box. The file is only fetched when the box is about to scroll into view (see the clip script below). */
+const box=(c,p,lab,cls)=>{
+  const name=c.title||p.title;
+  if(!c.src)return `<div class="media empty${cls?" "+cls:""}"><p class="msg">Clip coming soon</p></div>`;
+  return `<div class="media${cls?" "+cls:""}" data-src="${e(c.src)}" data-title="${e(name)}" data-kind="${e(p.title)}" data-line="${e(c.line||"")}"${c.poster?` data-poster="${e(c.poster)}"`:""}>
+    <video muted loop playsinline preload="none"${c.poster?` poster="${e(c.poster)}"`:""} aria-hidden="true" tabindex="-1"></video>
+    ${lab?`<span class="lab">${e(lab)}</span>`:""}
+    <button class="zoom" type="button" data-open aria-label="Watch ${e(name)} with sound"><span class="badge" aria-hidden="true">${I.play}</span></button>
+  </div>`;
+};
+/* one system section: heading, the main demo card, then the rest of its clips */
+const system=(p,i)=>{
+  const n=num(i),cl=clipsOf(p),[first,...rest]=cl;
+  return `<article class="sys" id="sys-${i+1}" aria-labelledby="sys-${i+1}-t">
+  <header class="sys-head"><div><span class="sys-ic" aria-hidden="true">${IC[p.icon]||IC[guess(p)]||n}</span><div><p class="eyebrow">System ${n}${p.label?` · ${e(p.label)}`:""}</p><h3 id="sys-${i+1}-t">${e(p.title)}</h3>${p.blurb?`<p class="blurb">${e(p.blurb)}</p>`:""}</div></div><span class="count">${cl.length} clip${cl.length===1?"":"s"}</span></header>
+  ${first?`<div class="feat card">${box(first,p,first.tag||"Main demo")}<div class="feat-body"><p class="eyebrow">Main demo</p><h4>${e(first.title||p.title)}</h4>${first.line?`<p class="blurb">${e(first.line)}</p>`:""}${tags(p.tags)}${first.src?`<button class="tlink" type="button" data-play="sys-${i+1}">Watch with sound ${I.right}</button>`:""}</div></div>`:""}
+  ${rest.length?`<ul class="grid">${rest.map((c,k)=>`<li class="tile card">${box(c,p,c.tag||p.label)}<div class="tile-body"><h4>${e(c.title||p.title)}</h4>${c.line?`<p class="blurb">${e(c.line)}</p>`:""}${c.src?`<button class="tlink" type="button" data-play="sys-${i+1}" data-k="${k+1}">Watch ${I.right}</button>`:""}</div></li>`).join("")}</ul>`:""}
+</article>`;
+};
+/* background lines for the opening: about 30 curves that sweep from top left to bottom right and spread apart as they go */
+const waves=()=>{
+  let d="";
+  for(let i=0;i<30;i++){
+    const y=-260+i*44,k=i/29;
+    d+=`<path d="M-60 ${y} C ${420} ${y+120+k*80}, ${980} ${y-40+k*160}, ${1660} ${y+260+k*220}" opacity="${(.35+.65*Math.sin(Math.PI*k)).toFixed(2)}"/>`;
+  }
+  return `<svg class="waves" viewBox="0 0 1600 1000" preserveAspectRatio="none" aria-hidden="true">${d}</svg>`;
+};
+const accent=t=>e(t).replace(/\*([^*]+)\*/g,"<em>$1</em>");   /* *word* -> red word */
 const COUNT=["No","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve"];
 const WK=Object.assign({label:"Selected work",title:["Selected","work."],intro:""},S.work||{});
 const wkTitle=Array.isArray(WK.title)?WK.title:[WK.title];
-const nProj=(S.projects||[]).length;
-
-/* soft flowing lines behind the hero */
-const waves=()=>{
-  const W=1440,H=640,N=24;let out="";
-  for(let i=0;i<N;i++){
-    const t=i/(N-1),pts=[];
-    for(let x=-120;x<=W+120;x+=120){
-      pts.push([x,H*.5+(t-.5)*H*.95+Math.sin(x*.0046+t*3.2)*(36+t*84)+Math.sin(x*.0107-t*4.6)*24]);
-    }
-    let d=`M${pts[0][0]} ${pts[0][1].toFixed(1)}`;
-    for(let k=0;k<pts.length-1;k++){
-      const a=pts[k-1]||pts[k],b=pts[k],c=pts[k+1],f=pts[k+2]||c;
-      d+=`C${(b[0]+(c[0]-a[0])/6).toFixed(1)} ${(b[1]+(c[1]-a[1])/6).toFixed(1)} ${(c[0]-(f[0]-b[0])/6).toFixed(1)} ${(c[1]-(f[1]-b[1])/6).toFixed(1)} ${c[0]} ${c[1].toFixed(1)}`;
-    }
-    out+=`<path d="${d}"/>`;
-  }
-  return out;
-};
-const skillRows=names=>{
-  /* First half of the skills on the top row (drifts left), the rest on the bottom row (drifts right). */
-  const half=Math.ceil(names.length/2),rows=[names.slice(0,half),names.slice(half)].filter(r=>r.length);
-  return rows.map((r,i)=>{
-    const reps=Math.max(3,Math.ceil(15/r.length));   /* enough copies that one group is wider than a big screen */
-    let li="";
-    for(let g=0;g<2;g++)for(let k=0;k<reps;k++)r.forEach(n=>{li+=`<li${g||k?' aria-hidden="true"':""}>${n}</li>`;});
-    return `<div class="mq${i%2?" rev":""}" style="--dur:${80+i*15}s"><ul class="track">${li}</ul></div>`;
-  }).join("");
-};
-const row=(label,html)=>`<div><dt class="caps">${label}</dt><dd>${html}</dd></div>`;
+const hasReviews=S.showReviews&&S.reviews&&S.reviews.length;
+const kv=(k,v,copy)=>`<div><dt>${k}</dt><dd>${v}</dd>${copy?`<button class="copy" type="button" data-copy="${e(copy)}">Copy</button>`:""}</div>`;
 const ext=(u,t)=>`<a class="tlink" href="${e(url(u))}" target="_blank" rel="noopener">${t} ${I.up}</a>`;
-
-const points=v=>Array.isArray(v)?v:String(v||"").split(",").map(x=>x.trim()).filter(Boolean);
+const head=(label,title,lede)=>`<div class="shead"><p class="eyebrow">${label}</p><h2>${title}</h2>${lede?`<p class="lede">${lede}</p>`:""}</div>`;
+const navLink=(id,name,icon,right)=>`<li><a href="#${id}" data-t="${id}">${IC[icon]||icon}<span>${name}</span><small>${right}</small></a></li>`;
+/* the side menu, like Sufi's: Overview, then one WORK item that opens into your systems, then the other sections, then Hire me */
+let sn=1;
+const NAV=`<ul>${navLink("top","Overview","home",num(0))}</ul>
+${nProj?`<p class="grp">Work</p><ul><li class="wgrp"><a href="#work" data-t="work">${IC.film}<span>${e(WK.nav||"Systems")}</span>${svg(12,12,'<path d="m3 4.5 3 3 3-3" stroke-linecap="round" stroke-linejoin="round"/>').replace("<svg ",'<svg class="chev" ')}<small>${nProj}</small></a>
+  <div class="subwrap"><div><ul class="sub">${P.map((p,i)=>`<li><a href="#sys-${i+1}" class="sl"><i class="sdot"></i><span>${e(p.title)}</span></a></li>`).join("")}</ul></div></div></li></ul><hr>`:""}
+<ul>
+  ${navLink("skills","Capabilities","bolt",num(sn++))}
+  ${S.showRates?navLink("rates","Rates","tag",num(sn++)):""}
+  ${hasReviews?navLink("reviews","Reviews","chat",S.reviews.length):""}
+  ${navLink("contact","Contact","mail",num(sn++))}
+</ul>
+<hr>
+<ul>
+  <li><a href="#contact">${IC.chat}<span>Hire me</span><small>${I.up}</small></a></li>
+</ul>`;
 
 document.title=`${S.name} - ${S.role}`;
 document.getElementById("app").innerHTML=`
 ${placeholder?`<div class="notice">Placeholder content. Edit the SITE block in index.html before you publish.</div>`:""}
+<div class="shell">
+<aside class="side card" aria-label="About ${e(S.name)}">
+  <div class="side-top">
+    <a class="brand" href="#top" aria-label="${e(S.name)}, back to top"><span class="logo">${S.avatar?`<img src="${e(S.avatar)}" alt="">`:LOGO}</span><span class="who"><b>${e(S.name)}</b><small>${e(S.role)}${S.roles?` · ${e(S.roles)}`:""}</small></span></a>
+    <dl class="facts">
+      <div><dt>Availability</dt><dd><i class="dot"></i>${S.available?"Open for work":"Fully booked"}</dd></div>
+      ${S.reply?`<div><dt>Reply time</dt><dd>${e(S.reply)}</dd></div>`:""}
+      ${S.years?`<div><dt>Experience</dt><dd>${e(S.years)}</dd></div>`:""}
+    </dl>
+  </div>
+  <nav class="snav" aria-label="Sections">${NAV}</nav>
+  <p class="side-foot">Every clip on this page is from my own builds. Last updated ${e(S.updated)}.</p>
+</aside>
+<div class="main">
 <header class="top"><div class="bar">
-  <a class="brand" href="#top" aria-label="${e(S.name)}, back to top"><span class="bars" aria-hidden="true"><i></i><i></i></span><span class="who"><b>${e(S.name)}</b><small>${e(S.role)}</small></span></a>
-  <nav class="nav" aria-label="Sections"><a href="#work">Work</a><a href="#skills">Capabilities</a>${S.showRates?`<a href="#rates">Rates</a>`:""}<a href="#contact">Contact</a></nav>
-  <a class="topcta" href="#contact" aria-label="Start a project"><span class="lbl">Start a project</span><span class="sq" aria-hidden="true">${I.up}</span></a>
+  <div class="crumb"><a class="mbrand" href="#top" aria-label="${e(S.name)}, back to top">${LOGO}<b>${e(S.name)}</b></a><p class="path"><span>${e(String(S.name).toLowerCase())}</span><i>/</i><b id="crumb">Overview</b></p></div>
+  <div class="tbtns">${nProj?`<a class="tb wk" href="#work">View work</a>`:""}<a class="tb go" href="#contact">Hire me ${I.up}</a></div>
 </div></header>
-<main id="top">
-<section class="hero${S.available?"":" off"}">
-  <svg class="waves" viewBox="0 0 1440 640" preserveAspectRatio="xMidYMid slice" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1">${waves()}</svg>
-  <canvas class="hero-art l" data-shape="r6" aria-hidden="true"></canvas>
-  <canvas class="hero-art r" data-shape="bricks" aria-hidden="true"></canvas>
-  <div class="wrap hero-mid">
-    <h1><span class="hi">Hi, I’m</span><span class="big">${e(S.name)}<i>.</i></span><span class="role">${e(S.role)}.</span></h1>
-    <p class="status caps"><i class="dot"></i>${e(status)}</p>
-    <div class="actions"><a class="btn" href="#work">View projects ${I.down}</a><a class="hire" href="#contact">Hire me ${I.up}</a></div>
-  </div>
-  <div class="wrap hero-row hero-bot">
-    <span></span>
-    <a class="explore" href="#work">Explore my work ${I.down}</a>
-    ${S.reply?`<p class="reply"><small class="caps">Reply time</small><span>${e(S.reply)}</span></p>`:"<span></span>"}
-  </div>
-</section>
-<section class="sec" id="work" aria-labelledby="work-title"><div class="wrap"><div class="wk">
-  <div class="wk-side">
-    <p class="eyebrow caps"><b>01 /</b> ${e(WK.label)}</p>
-    <h2 class="wk-title" id="work-title">${e(wkTitle[0])}${wkTitle[1]?` <em>${e(wkTitle[1])}</em>`:""}</h2>
-    <p class="lede"><b>${nProj<=12?COUNT[nProj]:nProj} project${nProj===1?"":"s"}.</b>${e(WK.intro)}</p>
-    ${nProj>1?`<div class="wk-prog" aria-hidden="true"><span class="cur">01</span><span class="ln"><i></i></span><span>${String(nProj).padStart(2,"0")}</span></div>`:""}
-    <canvas class="wk-art" aria-hidden="true"></canvas>
-  </div>
-  <div class="plist">${(S.projects||[]).map(project).join("")}</div>
-</div></div></section>
-${S.skills&&S.skills.length?`<section class="skillbar" aria-label="Skills">${skillRows(S.skills.map(k=>e(Array.isArray(k)?k[0]:k)))}</section>`:""}
-<section class="sec" id="skills"><div class="wrap">
-  <div class="head"><h2>Capabilities</h2><p class="lede">How I work on a project.</p></div>
-  <ul class="pillars">${(S.pillars||[]).map((p,i)=>`<li class="pillar"><span class="n">${String(i+1).padStart(2,"0")}</span><h3>${e(p[0])}</h3><ul class="pts">${points(p[1]).map(t=>`<li>${e(t)}</li>`).join("")}</ul></li>`).join("")}</ul>
-</div></section>
-${S.showRates?`<section class="sec tight" id="rates"><div class="wrap">
-  <div class="head"><h2>Rates and terms</h2><p class="lede">Prices up front so you can check the budget before messaging me.</p></div>
-  <div class="tw"><table><thead><tr><th class="caps" scope="col">Job</th><th class="caps" scope="col">Price</th><th class="caps" scope="col">Turnaround</th></tr></thead><tbody>${(S.rates||[]).map(r=>`<tr><td data-label="Job">${e(r[0])}</td><td class="price" data-label="Price">${e(r[1])}</td><td data-label="Turnaround">${e(r[2])}</td></tr>`).join("")}</tbody></table></div>
-  <p class="terms">${e(S.terms)}</p>
-</div></section>`:""}
-${S.showReviews&&S.reviews&&S.reviews.length?`<section class="sec tight"><div class="wrap"><div class="head"><h2>Client reviews</h2></div><div class="quotes">${S.reviews.map(r=>`<blockquote><p>${e(r.quote)}</p><footer>${r.link?`<a href="${e(url(r.link))}" target="_blank" rel="noopener">${e(r.who)}</a>`:e(r.who)}</footer></blockquote>`).join("")}</div></div></section>`:""}
-<section class="cta${S.available?"":" off"}" id="contact"><div class="wrap">
-  <div class="cgrid">
-    <div class="cleft">
-      <h2>Contact</h2>
-      <p class="lede">Send the system you need, the game genre, your deadline and your budget. I’ll reply with a price and timeline.</p>
-      <a class="btn" href="mailto:${e(C.email)}?subject=Project%20enquiry">Start a project ${I.up}</a>
-      <p class="status caps"><i class="dot"></i>${e(status)}</p>
-      <p class="hrs">${e(S.hours)}</p>
+<main>
+<section class="hero card" id="top" data-spy="Overview">
+  ${waves()}
+  <p class="open-pill"><i class="dot"></i>${S.available?"Open for commissions":"Fully booked right now"}</p>
+  <h1 class="hello">${S.headline?accent(S.headline):e(S.role)}</h1>
+  ${S.intro?`<p class="hero-intro">${e(S.intro)}</p>`:""}
+  <div class="actions">${nProj?`<a class="btn" href="#work">See my work ${I.down}</a>`:""}<a class="btn ghost" href="#contact">Hire me ${I.up}</a></div>
+  ${S.reel&&S.reel.src?`<div class="reel-wrap">
+    <div class="reel-head"><h2><span class="pi" aria-hidden="true">${I.play}</span>${e(S.reel.label||"Showreel")}</h2>${S.reel.title?`<p>${e(S.reel.title)}</p>`:""}</div>
+    <div class="media reel" data-src="${e(S.reel.src)}" data-title="Showreel" data-kind="${e(S.name)}"${S.reel.poster?` data-poster="${e(S.reel.poster)}"`:""}>
+      <video muted loop playsinline preload="metadata"${S.reel.poster?` poster="${e(S.reel.poster)}"`:""} aria-hidden="true" tabindex="-1"></video>
+      <span class="lab">Highlights</span>
+      <button class="zoom" type="button" data-sound aria-label="Showreel: turn sound on"><span class="badge" aria-hidden="true">${I.play}</span></button>
+      <span class="sndtag" aria-hidden="true">${I.mute}${I.vol}<span>Sound off</span></span>
     </div>
-    <div class="ccard">
-      <h3>${e(S.name)}</h3>
-      <p class="crole">${e(S.role)}</p>
-      <dl class="rows">
-        <div class="full"><dt class="caps">Email</dt><dd><a class="big" href="mailto:${e(C.email)}">${e(C.email)} ${I.up}</a></dd></div>
-        ${row("Discord",`${e(C.discord)}<span class="acts"><button class="mini" type="button" data-copy="${e(C.discord)}">Copy username</button>${/^\d{15,22}$/.test(String(C.discordId||""))?`<a class="mini" href="https://discord.com/users/${e(C.discordId)}" target="_blank" rel="noopener">Open Discord ${I.up}</a>`:""}</span>`)}
-        ${row("Reply time",e(S.reply))}
-        ${row("Payment",e(S.payment))}
-        ${row("Experience",e(S.years))}
-        ${C.devforum?row("DevForum",ext(C.devforum,"View profile")):""}
-        ${C.roblox?row("Roblox",ext(C.roblox,"View profile")):""}
+    <p class="reel-cap">${S.reel.line?`${e(S.reel.line)} `:""}<a href="#work">See all my work ${I.down}</a> <i>·</i> <b>Click the video for sound</b></p>
+  </div>`:""}
+</section>
+${S.stats&&S.stats.length?`<ul class="stats">${S.stats.map(t=>`<li class="stat card"><b>${t[0]==="#"?nProj:e(t[0])}</b><span>${e(t[1])}</span></li>`).join("")}</ul>`:""}
+${nProj?`<section class="sec" id="work" data-spy="Work" aria-labelledby="work-title">
+  <div class="shead"><p class="eyebrow">${e(WK.label)}</p><h2 id="work-title">${e(wkTitle[0])}${wkTitle[1]?` <em>${e(wkTitle[1])}</em>`:""}</h2><p class="lede"><b>${nProj<=12?COUNT[nProj]:nProj} system${nProj===1?"":"s"}.</b> ${e(WK.intro)}</p></div>
+  ${nProj>1?`<div class="tlband"><ol class="tl${nProj>5?" many":""}" aria-label="Systems">${P.map((p,i)=>{const k=clipsOf(p).length;return `<li${i?"":' class="cur"'}><a href="#sys-${i+1}"><i class="node"></i><span class="txt"><b>${e(p.title)}</b><small>${k} clip${k===1?"":"s"}</small></span></a></li>`}).join("")}</ol></div>`:""}
+  ${P.map(system).join("")}
+  ${S.ask?`<div class="ask card"><div><h3>${e(S.ask.title)}</h3>${S.ask.line?`<p>${e(S.ask.line)}</p>`:""}</div><div class="actions"><a class="btn" href="#contact">Start a project ${I.up}</a><a class="btn ghost" href="#skills">See capabilities ${I.down}</a></div></div>`:""}
+</section>`:""}
+<section class="sec" id="skills" data-spy="Capabilities">
+  ${head("Capabilities","What I can build")}
+  <ul class="pillars">${(S.pillars||[]).map((p,i)=>`<li class="pillar"><span class="n">${num(i)}</span><h3>${e(p[0])}</h3><ul class="pts">${points(p[1]).map(t=>`<li>${e(t)}</li>`).join("")}</ul></li>`).join("")}</ul>
+</section>
+${S.showRates?`<section class="sec" id="rates" data-spy="Rates">
+  ${head("Rates","Rates and terms","Prices up front so you can check the budget before messaging me.")}
+  <div class="tw card"><table><thead><tr><th class="caps" scope="col">Job</th><th class="caps" scope="col">Price</th><th class="caps" scope="col">Turnaround</th></tr></thead><tbody>${(S.rates||[]).map(r=>`<tr><td data-label="Job">${e(r[0])}</td><td class="price" data-label="Price">${e(r[1])}</td><td data-label="Turnaround">${e(r[2])}</td></tr>`).join("")}</tbody></table></div>
+  <p class="terms">${e(S.terms)}</p>
+</section>`:""}
+${hasReviews?`<section class="sec" id="reviews" data-spy="Reviews">
+  ${head("Reviews","Client reviews")}
+  <div class="quotes">${S.reviews.map(r=>`<blockquote class="card"><p>${e(r.quote)}</p><footer>${r.link?`<a href="${e(url(r.link))}" target="_blank" rel="noopener">${e(r.who)}</a>`:e(r.who)}</footer></blockquote>`).join("")}</div>
+</section>`:""}
+<section class="sec" id="contact" data-spy="Contact">
+  ${head("Contact","Start a project","Send me the details and I’ll reply with a price and timeline.")}
+  <div class="cgrid">
+    <div class="cc card">
+      <h3>Reach me</h3>
+      <dl class="kv">
+        ${C.email?kv("Email",`<a href="mailto:${e(C.email)}">${e(C.email)}</a>`,C.email):""}
+        ${C.discord?kv("Discord",e(C.discord),C.discord):""}
+        ${/^\d{15,22}$/.test(String(C.discordId||""))?kv("Discord profile",ext("https://discord.com/users/"+C.discordId,"Open")):""}
+        ${C.devforum?kv("DevForum",ext(C.devforum,"View profile")):""}
+        ${C.roblox?kv("Roblox",ext(C.roblox,"View profile")):""}
+        ${S.reply?kv("Reply time",e(S.reply)):""}
+        ${S.hours?kv("Hours",e(S.hours)):""}
+      </dl>
+      ${C.email?`<a class="btn" href="mailto:${e(C.email)}?subject=Project%20enquiry">Start a project ${I.up}</a>`:""}
+      <p class="status caps"><i class="dot"></i>${e(status)}</p>
+    </div>
+    <div class="cc card">
+      ${S.brief&&S.brief.length?`<h3>Before you message</h3><dl class="kv">${S.brief.map(b=>kv("Include",e(b))).join("")}</dl>`:""}
+      <h3>Good to know</h3>
+      <dl class="kv">
+        ${S.payment?kv("Payment",e(S.payment)):""}
+        ${S.years?kv("Experience",e(S.years)):""}
       </dl>
     </div>
   </div>
-</div></section>
+</section>
 </main>
-<footer class="site"><div class="wrap"><span>${e(S.name)}, ${e(S.role)}. Last updated ${e(S.updated)}.</span><a href="#top">Back to top ${I.top}</a></div></footer>
-${(S.projects||[]).some(p=>vid(p.yt)||vid(p.link))?`<dialog class="lb" id="lb" aria-labelledby="lb-title"><div class="lb-box">
+<footer class="site"><span>${e(S.name)}, ${e(S.role)}.</span><a href="#top">Back to top ${I.top}</a></footer>
+</div>
+</div>
+${nProj?`<div class="cue" id="cue"><a href="#work">Scroll to see my work<span class="cue-ar">${I.down}</span></a></div>`:""}
+<dialog class="lb" id="lb" aria-labelledby="lb-title"><div class="lb-box">
   <button class="lb-x" type="button" aria-label="Close video" autofocus>${I.close}</button>
-  <div class="lb-stage"></div>
-  <div class="lb-info">
-    <p class="kind" hidden></p>
-    <h3 id="lb-title"></h3>
-    <p class="blurb"></p>
-    <ul class="tags"></ul>
-    <div class="cardfoot"><a class="tlink" href="#" target="_blank" rel="noopener">Open on YouTube ${I.up}</a></div>
+  <div class="lb-in">
+    <div class="lb-stage"></div>
+    <div class="lb-info">
+      <p class="eyebrow" hidden></p>
+      <h3 id="lb-title"></h3>
+      <p class="blurb"></p>
+      <ul class="tags"></ul>
+    </div>
   </div>
-</div></dialog>`:""}`;
+</div></dialog>`;
 
 /* match the browser bar and tab icon to the theme */
 const cs=getComputedStyle(document.documentElement),css=n=>cs.getPropertyValue(n).trim();
 document.querySelector("meta[name=theme-color]").content=css("--bg");
 document.querySelector("link[rel=icon]").href="data:image/svg+xml,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M26 4h14L28 60H14z" fill="${css("--accent")}"/><path d="M46 4h6L40 60h-6z" fill="${css("--accent")}"/></svg>`);
 
-/* click "Copy username" to copy it */
+/* the Copy buttons in Contact */
 const say=t=>{const l=document.getElementById("live");l.textContent="";setTimeout(()=>l.textContent=t,50)};
 const copyText=t=>(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).catch(()=>{const a=document.createElement("textarea");a.value=t;a.style.cssText="position:fixed;opacity:0";document.body.append(a);a.select();try{document.execCommand("copy")}catch(_){}a.remove()});
 document.addEventListener("click",ev=>{
   const c=ev.target.closest("[data-copy]");
-  if(c){const t=c.textContent;copyText(c.dataset.copy).then(()=>{c.textContent="Copied";say("Discord username copied");setTimeout(()=>c.textContent=t,1600)})}
+  if(c&&c.textContent!=="Copied"){const t=c.textContent;copyText(c.dataset.copy).then(()=>{c.textContent="Copied";say("Copied");setTimeout(()=>c.textContent=t,1600)})}
 });
 
-/* Project videos. Each one starts playing by itself, muted and on a loop, as soon as it is mostly on screen, and pauses when you scroll away.
-   The Sound button turns the audio on (one video at a time). The player is loaded a little before the card scrolls in,
-   so the video is already running when you get there.
-   Clicking the video, or the Watch button, opens the watch view (a dialog with the full YouTube player and the project's details).
-   While it is open the card videos pause. Uses YouTube's player API so we know whether it worked. If YouTube refuses the embed (for example when
-   the file is opened straight from a folder instead of from a web address), the card keeps its thumbnail and the watch view offers a link to YouTube.
-   Reduced-motion visitors get no autoplay: they press "Play with sound".
-   Opened straight from a folder (file://), YouTube usually won't play embeds; the card then says so instead of sitting there. */
+/* While you scroll: light the right item in the side menu (in Work, the system you're on), name it in the top bar, and move the systems line.
+   A section counts as current once its top passes 40% of the way down the screen; a system once its top passes the middle. */
 (()=>{
-  const items=[...document.querySelectorAll(".media[data-yt]")];
-  if(!items.length)return;
-  const still=matchMedia("(prefers-reduced-motion:reduce)").matches,LOCAL=location.protocol==="file:";
-  let loading=false,apiFailed=false,modalOpen=false;const waiting=[];
-  const withApi=cb=>{
-    if(window.YT&&YT.Player)return cb(true);
-    if(apiFailed)return cb(false);   /* the script already failed to load once: don't wait for it again */
-    waiting.push(cb);
-    if(loading)return;
-    loading=true;
-    const prev=window.onYouTubeIframeAPIReady;
-    window.onYouTubeIframeAPIReady=()=>{if(prev)prev();waiting.splice(0).forEach(f=>f(true))};
-    const s=document.createElement("script");
-    s.src="https://www.youtube.com/iframe_api";
-    s.onerror=()=>{apiFailed=true;waiting.splice(0).forEach(f=>f(false))};
-    document.head.append(s);
-  };
-  const all=[];
-  items.forEach(m=>{
-    const btn=m.querySelector(".snd"),txt=btn.querySelector("span"),vp=m.querySelector(".vp");
-    const c={m,inView:typeof IntersectionObserver==="undefined",near:false,sound:false,go:false,ready:false,playing:false,dead:false,building:false,p:null,watch:0};
-    const paint=()=>{
-      if(c.dead)return;
-      btn.setAttribute("aria-pressed",String(c.sound));
-      txt.textContent=c.sound?"Sound on":c.playing?"Sound off":"Play with sound";
-    };
-    const apply=()=>{                       /* make the player match what we want right now */
-      if(!c.ready||c.dead)return;
-      if(c.sound){c.p.unMute();c.p.setVolume(100)}else c.p.mute();
-      if(c.go){
-        c.p.playVideo();
-        /* still not playing a few seconds after we asked: the browser blocked it (or YouTube refused a local file) */
-        if(!c.playing&&!c.watch)c.watch=setTimeout(()=>{c.watch=0;if(c.playing||c.dead||!c.go||c.state===3)return;   /* 3 = still buffering: give it time */if(LOCAL)hint();else{btn.hidden=false;paint()}},4000);
-      }else c.p.pauseVideo();
-    };
-    const hint=()=>{
-      if(m.querySelector(".lhint"))return;
-      m.insertAdjacentHTML("beforeend",'<p class="lhint">Videos play once the site is opened from a web address (GitHub Pages, or a local server). Opened from a folder, YouTube blocks them.</p>');
-    };
-    const fail=()=>{
-      if(c.dead)return;
-      c.dead=true;
-      if(LOCAL)hint();
-      if(c.p){try{c.p.destroy()}catch(_){}}
-      vp.remove();btn.hidden=true;m.classList.add("failed");
-    };
-    const build=()=>{
-      if(c.building||c.dead)return;
-      c.building=true;
-      withApi(ok=>{
-        if(c.dead)return;
-        if(!ok)return fail();
-        const id=m.dataset.yt;
-        c.p=new YT.Player(vp.firstElementChild,{
-          host:"https://www.youtube-nocookie.com",
-          videoId:id,
-          playerVars:{autoplay:0,mute:1,controls:0,disablekb:1,fs:0,iv_load_policy:3,rel:0,playsinline:1,modestbranding:1,loop:1,playlist:id},
-          events:{
-            onReady:ev=>{
-              c.ready=true;
-              const f=ev.target.getIframe();f.title="Demo: "+m.dataset.title;f.tabIndex=-1;
-              apply();
-            },
-            onStateChange:ev=>{
-              c.state=ev.data;
-              if(ev.data===1){c.playing=true;vp.classList.add("on");btn.hidden=false;paint()}
-              else if(ev.data===2){c.playing=false;paint()}
-              else if(ev.data===0){ev.target.seekTo(0);ev.target.playVideo()}
-            },
-            onError:fail
-          }
-        });
-      });
-    };
-    c.sync=()=>{
-      const here=c.inView&&!document.hidden&&!modalOpen;   /* cards also stay paused while the watch view is open */
-      if(!here)c.sound=false;               /* scrolling away or switching tabs always turns the sound off */
-      c.go=here&&(!still||c.sound);
-      if(c.dead)return;
-      if((c.go||c.near)&&!c.p)build();else apply();
-      paint();
-    };
-    c.set=on=>{
-      if(on){c.inView=true;all.forEach(o=>{if(o!==c&&o.sound){o.sound=false;o.sync()}})}
-      c.sound=on;c.sync();
-    };
-    btn.addEventListener("click",()=>c.set(!c.sound));
-    if(still){btn.hidden=false;paint()}
-    all.push(c);
-  });
-  if(typeof IntersectionObserver==="undefined"){all.forEach(c=>c.sync())}
-  else{
-    const byEl=new Map(all.map(c=>[c.m,c]));
-    const io=new IntersectionObserver(es=>es.forEach(en=>{
-      const c=byEl.get(en.target);
-      if(en.intersectionRatio>=.35){c.inView=true;c.sync()}       /* start when mostly visible... */
-      else if(en.intersectionRatio<.12){c.inView=false;c.sync()}   /* ...stop only when nearly gone, so it doesn't flicker */
-    }),{threshold:[0,.12,.35]});
-    items.forEach(m=>io.observe(m));
-    /* load the player early, when the card is within about one screen of view, but only after the page itself has
-       finished loading, so YouTube's player never slows down the first paint of your site */
-    if(!still){
-      const watchNear=()=>{
-        const pre=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){const c=byEl.get(en.target);c.near=true;c.sync();pre.unobserve(en.target)}}),{rootMargin:"100% 0px 100% 0px"});
-        items.forEach(m=>pre.observe(m));
-      };
-      const later=()=>setTimeout(watchNear,1200);
-      if(document.readyState==="complete")later();else addEventListener("load",later,{once:true});
-    }
-  }
-  document.addEventListener("visibilitychange",()=>all.forEach(c=>c.sync()));
-
-  /* ----- Watch view. One dialog and one player: the player is built when it opens and destroyed when it closes (that also stops the sound). ----- */
-  const lb=document.getElementById("lb");
-  if(!lb)return;
-  const stage=lb.querySelector(".lb-stage"),ytLink=lb.querySelector(".cardfoot a"),kind=lb.querySelector(".kind");
-  let lbPlayer=null,run=0;
-  const kill=()=>{if(lbPlayer){try{lbPlayer.destroy()}catch(_){}lbPlayer=null}};
-  const openLb=m=>{
-    const id=m.dataset.yt,card=m.closest(".proj"),mine=++run;
-    const watchUrl="https://www.youtube.com/watch?v="+id;
-    if(typeof lb.showModal!=="function"){window.open(watchUrl,"_blank","noopener");return}   /* very old browsers: go straight to YouTube */
-    const k=card.querySelector(".kind");
-    kind.textContent=k?k.textContent:"";kind.hidden=!k;
-    lb.querySelector("h3").textContent=m.dataset.title;
-    lb.querySelector(".blurb").textContent=card.querySelector(".blurb").textContent;
-    lb.querySelector(".tags").innerHTML=card.querySelector(".tags").innerHTML;   /* already escaped when the card was built */
-    ytLink.href=watchUrl;
-    kill();
-    stage.innerHTML="<div></div>";
-    stage.style.backgroundImage=m.style.backgroundImage;   /* same thumbnail as the card, so it never flashes black while the player loads */
-    modalOpen=true;
-    document.documentElement.classList.add("lb-open");
-    all.forEach(c=>{c.sound=false;c.sync()});   /* pause the card videos */
-    lb.showModal();
-    const fail=()=>{
-      if(mine!==run)return;
-      kill();
-      stage.innerHTML=`<div class="lb-msg"><p>YouTube won’t play this video on this page.</p><a class="btn" href="${watchUrl}" target="_blank" rel="noopener">Open on YouTube ${I.up}</a></div>`;
-    };
-    withApi(ok=>{
-      if(mine!==run||!lb.open)return;
-      if(!ok)return fail();
-      lbPlayer=new YT.Player(stage.firstElementChild,{
-        host:"https://www.youtube-nocookie.com",
-        videoId:id,
-        playerVars:{autoplay:1,rel:0,playsinline:1,modestbranding:1},
-        events:{
-          onReady:ev=>{ev.target.getIframe().title="Video: "+m.dataset.title;ev.target.playVideo()},
-          onError:fail
-        }
-      });
-    });
-  };
-  lb.addEventListener("close",()=>{
-    run++;kill();
-    stage.innerHTML="";stage.style.backgroundImage="";
-    document.documentElement.classList.remove("lb-open");
-    modalOpen=false;all.forEach(c=>c.sync());   /* cards pick up where they should: playing if on screen */
-  });
-  lb.querySelector(".lb-x").addEventListener("click",()=>lb.close());
-  /* click on the dark area outside the frame closes it (only if the click also started there, so dragging a selection out of the frame doesn't) */
-  let downOn=null;
-  lb.addEventListener("pointerdown",ev=>{downOn=ev.target});
-  lb.addEventListener("click",ev=>{if(ev.target===lb&&downOn===lb)lb.close()});
-  ytLink.addEventListener("click",()=>{try{lbPlayer&&lbPlayer.pauseVideo()}catch(_){}});   /* opening YouTube in a new tab pauses this one */
-  document.addEventListener("click",ev=>{
-    const t=ev.target.closest("[data-open]");
-    const m=t&&t.closest(".proj").querySelector(".media[data-yt]");
-    if(m)openLb(m);
-  });
-})();
-
-/* Halftone drawing for the dotted shapes (the two in the hero, the logo in Work).
-   paint(c,S) draws a shape in black on a small hidden canvas; how dark each spot is decides the size of the red dot drawn there.
-   Every shape is drawn ONCE (and again only if its size changes); all their movement is CSS transforms, which the graphics card
-   handles, so the page does no drawing work while you look at it or scroll. The first drawing waits for an idle moment so it
-   never delays the page appearing. */
-const STILL=matchMedia("(prefers-reduced-motion:reduce)").matches;
-const idle=window.requestIdleCallback?f=>requestIdleCallback(f,{timeout:600}):f=>setTimeout(f,60);
-const halftone=(cv,paint,o={})=>{
-  if(!cv||!cv.getContext)return;
-  const ctx=cv.getContext("2d"),sh=document.createElement("canvas"),sc=sh.getContext("2d"),off=document.createElement("canvas"),oc=off.getContext("2d",{willReadFrequently:true});
-  const cs=getComputedStyle(document.documentElement),col=n=>cs.getPropertyValue(n).trim();
-  const acc=col("--accent"),hi=col("--hi"),cols=o.cols||44,glow=o.glow||.11,curve=o.curve||.5;
-  let drawn=0,timer=0;
-  const draw=()=>{
-    const S=Math.round(cv.getBoundingClientRect().width);
-    if(!S||S===drawn)return;   /* hidden, or already drawn at this size */
-    drawn=S;
-    const dpr=Math.min(devicePixelRatio||1,2),q=Math.max(1,S/cols/2.2),R=Math.ceil(S/q);
-    cv.width=cv.height=Math.round(S*dpr);sh.width=sh.height=off.width=off.height=R;
-    /* 1. the shape, then a blurred copy of it (a shadow thrown back from off-canvas) for a soft edge */
-    sc.setTransform(1/q,0,0,1/q,0,0);sc.fillStyle=sc.strokeStyle="#000";
-    paint(sc,S);
-    oc.save();oc.shadowColor="#000";oc.shadowBlur=S*glow/q;oc.shadowOffsetX=R*4;oc.drawImage(sh,-R*4,0);oc.restore();
-    oc.globalAlpha=.7;oc.drawImage(sh,0,0);
-    const px=oc.getImageData(0,0,R,R).data;
-    /* 2. dots on a grid, only where there is shape: darker spot, bigger dot. Four brightness levels, one path each. */
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-    const step=S/cols,buckets=[[],[],[],[]];
-    for(let y=step/2;y<S;y+=step)for(let x=step/2;x<S;x+=step){
-      const v=px[(((y/q)|0)*R+((x/q)|0))*4+3]/255;
-      if(v<.12)continue;   /* faint edge glow makes no dot: crisp outlines */
-      buckets[Math.min(3,v*4|0)].push(x,y,Math.max(.7,step*.5*Math.pow(v,curve)));
-    }
-    buckets.forEach((b,k)=>{
-      if(!b.length)return;
-      ctx.fillStyle=k===3?hi:acc;ctx.globalAlpha=.35+k*.22;ctx.beginPath();
-      for(let j=0;j<b.length;j+=3){ctx.moveTo(b[j]+b[j+2],b[j+1]);ctx.arc(b[j],b[j+1],b[j+2],0,7)}
-      ctx.fill();
-    });
-  };
-  idle(draw);
-  /* window resized: redraw once it settles, not on every step of the drag */
-  if(typeof ResizeObserver!=="undefined")new ResizeObserver(()=>{clearTimeout(timer);timer=setTimeout(()=>idle(draw),180)}).observe(cv);
-};
-
-/* Hero shapes, each drawn once, as lit 3D models in dots.
-   Left: a blocky R6-style character holding a sword up (classic tool pose, mid-step). Right: two classic studded bricks, a 2x2 stacked on a 2x4.
-   Tiny 3D renderer: boxes and cylinders, turned to a three-quarter view, faces sorted back to front, shaded by a light from the front and above,
-   with a thin gap cut along each edge so the faces read as separate planes. */
-(()=>{
-  /* a box; skip = faces to leave out (0 left side, 1 right side, 2 bottom, 3 top, 4 back, 5 front) */
-  const box=(w,h,d,skip=[])=>{
-    const v=[];for(const x of[-w/2,w/2])for(const y of[-h/2,h/2])for(const z of[-d/2,d/2])v.push([x,y,z]);
-    return {v,f:[[0,1,3,2],[4,5,7,6],[0,1,5,4],[2,3,7,6],[0,2,6,4],[1,3,7,5]].filter((_,k)=>!skip.includes(k)).map(i=>({i}))};
-  };
-  const cyl=(r,h,n)=>{
-    const v=[],f=[];
-    for(let k=0;k<n;k++){const a=k/n*Math.PI*2;v.push([Math.cos(a)*r,-h/2,Math.sin(a)*r],[Math.cos(a)*r,h/2,Math.sin(a)*r])}
-    for(let k=0;k<n;k++){const a=2*k,b=2*((k+1)%n);f.push({i:[a,b,b+1,a+1],smooth:true})}   /* round side: no gaps between its strips */
-    f.push({i:[...Array(n)].map((_,k)=>2*k+1)},{i:[...Array(n)].map((_,k)=>2*k)});
-    return {v,f};
-  };
-  /* rotate a point about the x axis (swing forward/back), then z (sideways), then move it */
-  const rx=([x,y,z],a)=>[x,y*Math.cos(a)-z*Math.sin(a),y*Math.sin(a)+z*Math.cos(a)];
-  const rz=([x,y,z],a)=>[x*Math.cos(a)-y*Math.sin(a),x*Math.sin(a)+y*Math.cos(a),z];
-  const part=(m,at,off=[0,0,0],sx=0,sz=0)=>{
-    const place=p=>{let q=[p[0]+off[0],p[1]+off[1],p[2]+off[2]];q=rz(rx(q,sx),sz);return [q[0]+at[0],q[1]+at[1],q[2]+at[2]]};
-    return {v:m.v.map(place),f:m.f,c:place([0,0,0])};
-  };
-  const render=(c,S,parts,yaw,pitch)=>{
-    const view=([x,y,z])=>{const X=x*Math.cos(yaw)+z*Math.sin(yaw),Z=-x*Math.sin(yaw)+z*Math.cos(yaw);return [X,y*Math.cos(pitch)-Z*Math.sin(pitch),y*Math.sin(pitch)+Z*Math.cos(pitch)]};
-    const L=(v=>{const m=Math.hypot(...v);return v.map(x=>x/m)})([.3,.75,.6]);   /* light from the front, above, a little to the right */
-    const faces=[];
-    parts.forEach(p=>{
-      const V=p.v.map(view),C=view(p.c);
-      p.f.forEach(f=>{
-        const fc=[0,1,2].map(a=>f.i.reduce((sum,i)=>sum+V[i][a],0)/f.i.length);
-        let n=fc.map((x,a)=>x-C[a]);const m=Math.hypot(...n)||1;n=n.map(x=>x/m);   /* face centre minus part centre = outward direction */
-        if(n[2]>.02)faces.push({pts:f.i.map(i=>V[i]),z:fc[2],lit:Math.max(0,n[0]*L[0]+n[1]*L[1]+n[2]*L[2]),smooth:f.smooth});
-      });
-    });
-    /* fit the model to the canvas */
-    let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
-    faces.forEach(f=>f.pts.forEach(([x,y])=>{x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y)}));
-    const k=S*.84/Math.max(x1-x0,y1-y0),cx=S/2-(x0+x1)/2*k,cy=S/2+(y0+y1)/2*k;
-    const path=pts=>{c.beginPath();pts.forEach(([x,y],j)=>j?c.lineTo(cx+x*k,cy-y*k):c.moveTo(cx+x*k,cy-y*k));c.closePath()};
-    c.lineWidth=S*.011;c.lineJoin="round";
-    faces.sort((a,b)=>a.z-b.z).forEach(f=>{
-      c.globalCompositeOperation="source-over";c.globalAlpha=.34+.66*Math.pow(f.lit,1.1);path(f.pts);c.fill();
-      if(f.smooth)return;
-      c.globalCompositeOperation="destination-out";c.globalAlpha=1;c.stroke();
-    });
-    c.globalCompositeOperation="source-over";c.globalAlpha=1;
-  };
-
-  /* R6 sizes in studs: torso 2x2x1, arms and legs 1x2x1, round head on top. Faces the viewer (+z) before turning. */
-  const limb=box(1,2,1),SH=3.5,HAND=[0,0,1.05];
-  const swordArm=[1.5,SH,0],grip=([x,y,z])=>[swordArm[0]+x,swordArm[1]+y,swordArm[2]+z+HAND[2]];
-  halftone(document.querySelector('.hero-art[data-shape="r6"]'),(c,S)=>render(c,S,[
-    part(box(2,2,1),[0,3,0]),                                  /* torso */
-    part(cyl(.62,1.2,22),[0,4.6,0]),                           /* head */
-    part(box(1,2,1,[1]),[-.5,2,0],[0,-1,0],.26),               /* right leg, back (no inner side: the gap between the legs stays empty) */
-    part(box(1,2,1,[0]),[.5,2,0],[0,-1,0],-.26),               /* left leg, stepping forward */
-    part(limb,[-1.5,SH,0],[0,-.5,0],.3),                       /* right arm, swinging back */
-    part(limb,swordArm,[0,-.5,0],-Math.PI/2),                  /* left arm straight out, holding the sword clear of the head */
-    part(box(.22,1.3,.22),grip([0,0,0])),                      /* handle through the fist */
-    part(box(.3,.3,.3),grip([0,-.78,0])),                      /* pommel */
-    part(box(1.2,.24,.4),grip([0,.74,0])),                     /* crossguard */
-    part(box(.46,2.5,.2),grip([0,2.11,0]))                     /* blade */
-  ],.72,.14),{cols:92,glow:.012,curve:.75});
-
-  /* classic studded bricks: a 4x2 with a 2x2 stacked on its right half. Studs only where nothing covers them. */
-  const stud=cyl(.3,.22,16),BR=1.2;
-  const studs=(xs,zs,y)=>xs.flatMap(x=>zs.map(z=>part(stud,[x,y+.11,z])));
-  halftone(document.querySelector('.hero-art[data-shape="bricks"]'),(c,S)=>render(c,S,[
-    part(box(4,BR,2),[0,BR/2,0]),
-    ...studs([-1.5,-.5],[-.5,.5],BR),
-    part(box(2,BR,2),[1,BR*1.5,0]),
-    ...studs([.5,1.5],[-.5,.5],BR*2)
-  ],.62,.5),{cols:84,glow:.012,curve:.75});
-})();
-
-/* Work: light up the project you're looking at, move the 01 / 06 counter and its line, and turn the dotted logo.
-   A project counts as "current" once its top passes 60% of the way down the screen. */
-(()=>{
-  const wk=document.querySelector(".wk");
-  if(!wk)return;
-  const items=[...wk.querySelectorAll(".proj")],cur=wk.querySelector(".wk-prog .cur"),ln=wk.querySelector(".wk-prog .ln"),art=wk.querySelector(".wk-art");
-  let active=-1,frac=0,queued=false;
+  const root=document.documentElement;
+  const secs=[...document.querySelectorAll("[data-spy]")],links=[...document.querySelectorAll(".snav a[data-t]")],crumb=document.getElementById("crumb");
+  const sys=[...document.querySelectorAll(".sys")],steps=[...document.querySelectorAll(".tl li")];
+  const grp=document.querySelector(".wgrp"),sub=document.querySelector(".sub"),subs=[...document.querySelectorAll(".sub a")];
+  let target="",cur=-1,queued=false;
   const update=()=>{
     queued=false;
-    const line=innerHeight*.6,tops=items.map(el=>el.getBoundingClientRect().top);
+    root.classList.toggle("scrolled",scrollY>8);
+    /* systems line */
     let i=0;
-    tops.forEach((t,k)=>{if(t<line)i=k});
-    /* how far between this project and the next one, for a smooth progress line */
-    const next=tops[i+1];
-    frac=items.length>1?Math.min(1,(i+(next!==undefined?Math.max(0,Math.min(1,(line-tops[i])/(next-tops[i]))):1))/(items.length-1)):1;
-    const p=frac.toFixed(4);
-    if(ln)ln.style.setProperty("--p",p);
-    if(art)art.style.setProperty("--p",p);
-    if(i!==active){
-      if(active>=0)items[active].classList.remove("on");
-      items[i].classList.add("on");
-      active=i;
-      if(cur){cur.textContent=String(i+1).padStart(2,"0");cur.classList.remove("tick");void cur.offsetWidth;cur.classList.add("tick")}
+    if(sys.length){
+      const line=innerHeight*.5,tops=sys.map(el=>el.getBoundingClientRect().top);
+      tops.forEach((t,k)=>{if(t<line)i=k});
+      steps.forEach((li,k)=>{
+        /* how far through system k you are: 0 before it, 1 after it, in between while it is the current one */
+        const p=k<i?1:k>i||k===tops.length-1?0:Math.max(0,Math.min(1,(line-tops[k])/(tops[k+1]-tops[k])));
+        li.style.setProperty("--p",p.toFixed(3));
+      });
+      if(i!==cur){
+        cur=i;
+        steps.forEach((li,k)=>{li.classList.toggle("done",k<i);li.classList.toggle("cur",k===i)});
+        sys.forEach((el,k)=>el.classList.toggle("on",k===i));
+        subs.forEach((a,k)=>{a.parentElement.classList.toggle("done",k<i);a.parentElement.classList.toggle("cur",k===i)});
+      }
+      /* the red line in the side menu's system list: reaches system k's dot when system k becomes current */
+      const pc=i<tops.length-1?Math.max(0,Math.min(1,(line-tops[i])/(tops[i+1]-tops[i]))):0;
+      if(sub)sub.style.setProperty("--wp",(sys.length>1?Math.min(1,(i+(tops[0]<line?pc:0))/(sys.length-1)):1).toFixed(3));
+    }
+    /* side menu and top bar */
+    let s=0;
+    secs.forEach((el,k)=>{if(el.getBoundingClientRect().top<innerHeight*.4)s=k});
+    if(innerHeight+scrollY>=root.scrollHeight-2)s=secs.length-1;   /* bottom of the page: the last section, even if it is short */
+    const sec=secs[s],inWork=sec.id==="work"&&sys.length;
+    const t=inWork?"sys-"+(cur+1):sec.id,hl=inWork?"work":sec.id;
+    if(t!==target){
+      target=t;
+      links.forEach(a=>{if(a.dataset.t===hl)a.setAttribute("aria-current","true");else a.removeAttribute("aria-current")});
+      subs.forEach((a,k)=>{if(inWork&&k===cur)a.setAttribute("aria-current","true");else a.removeAttribute("aria-current")});
+      if(grp)grp.classList.toggle("open",!!inWork);   /* the system list is open only while you're in Work */
+      if(crumb)crumb.textContent=inWork?`${sec.dataset.spy} / ${P[cur].title}`:sec.dataset.spy;
+      const on=inWork?subs[cur]:links.find(a=>a.dataset.t===hl),nav=document.querySelector(".snav");
+      setTimeout(()=>{   /* keep the lit item visible inside the side menu's own scroll (after the list has opened) */
+        if(!on||!nav||nav.scrollHeight<=nav.clientHeight)return;
+        const r=on.getBoundingClientRect(),n=nav.getBoundingClientRect();
+        if(r.top<n.top+8||r.bottom>n.bottom-8)nav.scrollTo({top:nav.scrollTop+r.top-n.top-n.height/2+r.height/2,behavior:"smooth"});
+      },420);
     }
   };
   const ask=()=>{if(!queued){queued=true;requestAnimationFrame(update)}};
-  wk.classList.add("live");
   update();
   addEventListener("scroll",ask,{passive:true});
   addEventListener("resize",ask);
+})();
 
-  /* Dotted logo: your two slanted bars as a halftone dot grid, drawn once. It sways with a CSS animation, and scrolling
-     through the projects turns it (the update above sets --p on it; the CSS rotate property uses it). */
-  if(typeof Path2D==="undefined")return;
-  const bars=[new Path2D("M26 4h14L28 60H14z"),new Path2D("M46 4h6L40 60h-6z")];
-  halftone(art,(c,S)=>{
-    const k=S/64*.66;
-    c.transform(k,0,0,k,S/2,S/2);c.translate(-33,-32);
-    bars.forEach(b=>c.fill(b));
+/* Clips and the showreel. They are your own video files (in the clips folder), played with the browser's built-in video player.
+   - A file is only downloaded when its box is about to scroll into view, so the page opens fast.
+   - Each one plays by itself, muted and on a loop, while it is mostly on screen, and pauses when you scroll away.
+   - Clicking a clip opens the watch view: the same file, big, with sound and controls. Clicking the showreel turns its sound on and off.
+   - A file that can't be found shows "Clip not found" with its name, so you can see which upload is missing. */
+(()=>{
+  const mediaOn=true;let modalOpen=false;   /* clips always play on their own */
+  const boxes=[...document.querySelectorAll(".media[data-src]")],all=[];
+  const fix=src=>src;   /* paths are used as written, relative to this page */
+  boxes.forEach(m=>{
+    const v=m.querySelector("video"),c={m,v,vis:false,dead:false,loaded:false,reel:m.classList.contains("reel")};
+    c.load=()=>{
+      if(c.loaded)return;
+      c.loaded=true;
+      v.preload=c.reel?"auto":"metadata";
+      v.src=fix(m.dataset.src)+(m.dataset.poster?"":"#t=0.1");   /* #t=0.1 shows the first frame as a picture before it plays */
+    };
+    c.sync=()=>{
+      if(c.dead)return;
+      const here=c.vis&&!document.hidden&&!modalOpen;
+      if(c.reel&&!here&&!v.muted)setSound(c,false);   /* leaving the reel always turns its sound off */
+      const want=here&&(mediaOn||(c.reel&&!v.muted));
+      if(want){c.load();const pr=v.play();if(pr)pr.catch(()=>{})}
+      else if(!v.paused)v.pause();
+    };
+    v.addEventListener("playing",()=>m.classList.add("on"));
+    v.addEventListener("pause",()=>m.classList.remove("on"));
+    v.addEventListener("error",()=>{
+      if(!c.loaded||c.dead)return;
+      c.dead=true;m.classList.add("missing");m.classList.remove("on");
+      m.insertAdjacentHTML("beforeend",`<p class="msg"><span>Clip not found<code>${e(m.dataset.src)}</code></span></p>`);
+    });
+    all.push(c);
   });
+  const reel=all.find(c=>c.reel);
+  const setSound=(c,on)=>{
+    c.v.muted=!on;
+    c.m.classList.toggle("sound",on);
+    const t=c.m.querySelector(".sndtag span");if(t)t.textContent=on?"Sound on":"Sound off";
+    const b=c.m.querySelector("[data-sound]");if(b)b.setAttribute("aria-label",`Showreel: turn sound ${on?"off":"on"}`);
+  };
+  const syncAll=()=>all.forEach(c=>c.sync());
+  /* load each file a little before it scrolls in, play it while mostly visible */
+  if(typeof IntersectionObserver==="undefined"){all.forEach(c=>{c.vis=true;c.sync()})}
+  else{
+    const byEl=new Map(all.map(c=>[c.m,c]));
+    const near=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){byEl.get(en.target).load();near.unobserve(en.target)}}),{rootMargin:"60% 0px 60% 0px"});
+    const seen=new IntersectionObserver(es=>es.forEach(en=>{
+      const c=byEl.get(en.target);
+      if(en.intersectionRatio>=.4){c.vis=true;c.sync()}
+      else if(en.intersectionRatio<.12){c.vis=false;c.sync()}   /* stop only when nearly gone, so it doesn't flicker */
+    }),{threshold:[0,.12,.4],rootMargin:"-150px 0px 0px 0px"});   /* the top 150px is behind the top bar and systems line */
+    all.forEach(c=>{near.observe(c.m);seen.observe(c.m)});
+  }
+  document.addEventListener("visibilitychange",syncAll);
+  /* clicking the reel: sound on/off (and play it, even with media off) */
+  if(reel){
+    reel.m.querySelector("[data-sound]").addEventListener("click",()=>{
+      if(reel.dead)return;
+      const on=reel.v.muted;
+      setSound(reel,on);
+      if(on){reel.vis=true;reel.load();if(on&&reel.v.paused){const pr=reel.v.play();if(pr)pr.catch(()=>{})}}
+      reel.sync();
+    });
+  }
+
+  /* ----- Watch view: one dialog; its video is created when it opens and removed when it closes (that also stops the sound). ----- */
+  const lb=document.getElementById("lb"),stage=lb.querySelector(".lb-stage"),kind=lb.querySelector(".eyebrow");
+  const openLb=m=>{
+    if(m.classList.contains("missing"))return;
+    if(typeof lb.showModal!=="function"){window.open(m.dataset.src,"_blank","noopener");return}   /* very old browsers: open the file itself */
+    const sec=m.closest(".sys"),tg=sec&&sec.querySelector(".tags");
+    kind.textContent=m.dataset.kind||"";kind.hidden=!m.dataset.kind;
+    lb.querySelector("h3").textContent=m.dataset.title;
+    lb.querySelector(".blurb").textContent=m.dataset.line||"";
+    lb.querySelector(".tags").innerHTML=tg?tg.innerHTML:"";   /* already escaped when the section was built */
+    stage.innerHTML=`<video controls autoplay playsinline${m.dataset.poster?` poster="${e(m.dataset.poster)}"`:""}></video>`;
+    const v=stage.firstElementChild;
+    v.addEventListener("error",()=>{stage.innerHTML=`<div class="lb-msg"><b>This clip couldn’t be played.</b><span>${e(m.dataset.src)}</span></div>`});
+    v.src=m.dataset.src;
+    modalOpen=true;
+    document.documentElement.classList.add("lb-open");
+    if(reel)setSound(reel,false);
+    syncAll();   /* pause the clips on the page */
+    lb.showModal();
+    const pr=v.play();if(pr)pr.catch(()=>{});
+  };
+  lb.addEventListener("close",()=>{
+    stage.innerHTML="";
+    document.documentElement.classList.remove("lb-open");
+    modalOpen=false;syncAll();
+  });
+  lb.querySelector(".lb-x").addEventListener("click",()=>lb.close());
+  /* click on the dark area outside the frame closes it (only if the click also started there) */
+  let downOn=null;
+  lb.addEventListener("pointerdown",ev=>{downOn=ev.target});
+  lb.addEventListener("click",ev=>{if(ev.target===lb&&downOn===lb)lb.close()});
+  document.addEventListener("click",ev=>{
+    const z=ev.target.closest("[data-open]");
+    if(z){openLb(z.closest(".media"));return}
+    const b=ev.target.closest("[data-play]");   /* the "Watch" links under the clips */
+    if(b){const ms=[...document.getElementById(b.dataset.play).querySelectorAll(".media[data-src]")],m=ms[+(b.dataset.k||0)];if(m)openLb(m)}
+  });
+})();
+
+/* the "Scroll to see my work" cue: only while the page is at the very top */
+(()=>{
+  const c=document.getElementById("cue");
+  if(!c)return;
+  const upd=()=>c.classList.toggle("gone",scrollY>60);
+  upd();addEventListener("scroll",upd,{passive:true});
 })();
 
 /* Among Us crewmate that chases the mouse. Not started on touch screens or for reduced-motion visitors (the CSS hides it too). */
